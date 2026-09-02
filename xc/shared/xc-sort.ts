@@ -65,3 +65,14 @@ export function XcSortPredicate<T>(sortDirection: XcSortDirection, accessor: (t:
             : (vala < valb ? -1 : 1) * direction;
     };
 }
+
+export function XcSortDirectionToLabel(dir: XcSortDirection): string {
+    switch (dir) {
+        case XcSortDirection.asc:
+            return 'ascending';
+        case XcSortDirection.dsc:
+            return 'descending';
+        default:
+            return 'none';
+    }
+}

@@ -1,8 +1,21 @@
 <xc-form-input xc-i18n
-    label="user-input"
-    [(value)]="data.username"
-    name="smartCardUser"
-    readonly
-    [xc-form-field-tab-index]="data.usernameTabIndex"
-    [xc-form-field-tab-index-suffix]="data.usernameSuffixTabIndex"
+               label="user-input"
+               [(value)]="data.username"
+               name="smartCardUser"
+               readonly
+               [xc-form-field-tab-index]="data.usernameTabIndex"
+               [xc-form-field-tab-index-suffix]="data.usernameSuffixTabIndex"
+/>
+
+@if (data.roleSelectionDataWrapper && (data.roleSelectionDataWrapper.values || []).length > 0) {
+ <xc-form-autocomplete xc-i18n
+                       label="role-input"
+                       [(xc-form-autocomplete-option)]="data.roleSelectionDataWrapper.value"
+                       [xc-form-autocomplete-options]="data.roleSelectionDataWrapper.values"
+                       [readonly]="data.disabled || (data.roleSelectionDataWrapper.values || []).length <= 1"
+                       xc-form-autocomplete-asdropdown
+                       [xc-form-field-tab-index]="data.roleTabIndex"
+                       [xc-form-field-tab-index-suffix]="data.roleSuffixTabIndex"
  />
+}
+

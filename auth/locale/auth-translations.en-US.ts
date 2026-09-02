@@ -96,6 +96,10 @@ export const authTranslations_enUS: I18nTranslation[] = [
         key: 'zeta.auth-login.user-input',
         value: 'User'
     },
+    {
+        key: 'zeta.auth-login.role-input',
+        value: 'Role'
+    },
 
     // change-password-dialog
     { key: 'dialog.changePassword.title', value: 'Change Password' },

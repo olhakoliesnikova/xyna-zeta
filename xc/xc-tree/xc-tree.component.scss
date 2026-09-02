@@ -57,6 +57,10 @@ $template-width: 256px;
             flex: 1 1 auto;
             color: $xc-tree-label-color;
 
+            &.readonly {
+                color: $xc-tree-label-color-readonly;
+            }
+
             &.disabled {
                 color: $xc-tree-label-color-disabled;
             }

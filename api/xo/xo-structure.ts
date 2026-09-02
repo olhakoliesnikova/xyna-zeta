@@ -317,20 +317,31 @@ export class XoStructureArray extends XoStructureComplexField {
         return this.typeFqn.isPrimitive();
     }
 
-    add(): XoStructureField {
+    add(idx: number = this.length): XoStructureField {
         // an array can't contain an array, so it contains either a primitive or an object.
         // this is a server-side limitation in the declaration of xyna objects
         const fieldClass = this.isPrimitive()
             ? XoStructureField.XoStructurePrimitive
             : XoStructureField.XoStructureObject;
-        const fieldName = String(this.length);
-        const field = new fieldClass(this, fieldName);
-        field.label = '[' + fieldName + ']';
-        field.typeRtc = this.typeRtc;
-        field.typeFqn = this.typeFqn;
-        field.typeLabel = this.typeLabel;
+        const fieldName = String(idx);
+        const newField = new fieldClass(this, fieldName);
+        newField.label = '[' + fieldName + ']';
+        newField.typeRtc = this.typeRtc;
+        newField.typeFqn = this.typeFqn;
+        newField.typeLabel = this.typeLabel;
+
+        let i = idx;
+        let field = newField;
+        while (i < this.length) {
+            const nextField = this.children[i];
+            this.children[i] = field;
+            field = nextField;
+            field.name = String(i + 1);
+            field.label = '[' + field.name + ']';
+            i++;
+        }
         this.children.push(field);
-        return field;
+        return newField;
     }
 
     remove(field: XoStructureField): number {

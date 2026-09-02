@@ -110,7 +110,6 @@ export interface ZetaProjectOptions {
     getPrivacyLink?(lang: string): string;
 }
 
-
 export interface ZetaEnvironment {
     /**
      * flag, which determines whether angular builds the project for production use or development use
@@ -118,8 +117,11 @@ export interface ZetaEnvironment {
     production: boolean;
     /**
      * holds options important for the Zeta Framework
+     * @deprecated
+     * Please use config.service instead. config.service loads config.json in asset folder. config.json has a similar structure and can be modified after build.
+     * If config.json is not found, this will be used as default. This behavior will be removed in future versions.
      */
-    zeta: ZetaProjectOptions;
+    zeta?: ZetaProjectOptions;
     /**
      * this allows projects to add specific properties to their environment constant
      */

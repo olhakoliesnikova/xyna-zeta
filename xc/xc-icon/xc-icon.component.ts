@@ -51,9 +51,9 @@ export class XcIconComponent extends XcThemeableComponent implements OnInit, Aft
 
 
     @HostBinding('class.reverse-direction')
-    @Input('xc-icon-reverse-direction')
+    @Input({alias: 'xc-icon-reverse-direction', transform: coerceBoolean})
     set reverseDirection(value: boolean) {
-        this._reverseDirection = coerceBoolean(value);
+        this._reverseDirection = value;
     }
 
 
@@ -62,9 +62,9 @@ export class XcIconComponent extends XcThemeableComponent implements OnInit, Aft
     }
 
 
-    @Input('xc-icon-material')
+    @Input({alias: 'xc-icon-material', transform: coerceBoolean})
     set iconMaterial(value: boolean) {
-        this._iconMaterial = coerceBoolean(value);
+        this._iconMaterial = value;
     }
 
 
@@ -73,9 +73,9 @@ export class XcIconComponent extends XcThemeableComponent implements OnInit, Aft
     }
 
 
-    @Input('xc-icon-svg')
+    @Input({alias: 'xc-icon-svg', transform: coerceBoolean})
     set iconSvg(value: boolean) {
-        this._iconSvg = coerceBoolean(value);
+        this._iconSvg = value;
     }
 
 

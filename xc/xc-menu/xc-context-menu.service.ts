@@ -15,31 +15,18 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { XoObject, XoObjectClass, XoProperty } from '../../api';
+import { Injectable } from '@angular/core';
+
+import { XcMenuTriggerDirective } from './xc-menu-trigger.directive';
+import { XcMenuComponentInterface } from './xc-menu.types';
 
 
-@XoObjectClass(null, 'xmcp.auth', 'ExternalUserLoginRequest')
-export class XoExternalUserLoginRequest extends XoObject {
+@Injectable({
+    providedIn: 'root'
+})
+export class XcContextMenuService {
 
-    @XoProperty()
-    domain: string;
+    trigger: XcMenuTriggerDirective;
 
-    @XoProperty()
-    force: boolean;
-
-    @XoProperty()
-    path: string;
-
-    @XoProperty()
-    selectedRole: string;
-
-
-    static withDomain(domain: string, path: string, force = false, selectedRole?: string): XoExternalUserLoginRequest {
-        const request = new XoExternalUserLoginRequest();
-        request.domain = domain;
-        request.force = force;
-        request.path = path;
-        request.selectedRole = selectedRole;
-        return request;
-    }
+    menu: XcMenuComponentInterface;
 }

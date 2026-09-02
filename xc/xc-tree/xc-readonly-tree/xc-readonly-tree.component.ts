@@ -106,9 +106,9 @@ export class XcReadonlyTreeComponent extends XcTreeNodeComponent implements OnDe
     }
 
 
-    @Input('xc-tree-keep-breaks')
+    @Input({alias: 'xc-tree-keep-breaks', transform: coerceBoolean})
     set keepBreaks(value: boolean) {
-        this._keepBreaks = coerceBoolean(value);
+        this._keepBreaks = value;
     }
 
 

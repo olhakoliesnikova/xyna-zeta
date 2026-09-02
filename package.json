@@ -1,7 +1,7 @@
 {
   "name": "zeta",
   "title": "Zeta",
-  "version": "21.0.5",
+  "version": "21.1.10",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,49 +12,58 @@
     "create-tsconfig": "tsc --init"
   },
   "dependencies": {
-    "@angular/animations": "21.2.6",
-    "@angular/cdk": "21.2.4",
-    "@angular/common": "21.2.6",
-    "@angular/compiler": "21.2.6",
-    "@angular/core": "21.2.6",
-    "@angular/forms": "21.2.6",
-    "@angular/material": "21.2.4",
-    "@angular/platform-browser": "21.2.6",
-    "@angular/platform-browser-dynamic": "21.2.6",
-    "@angular/router": "21.2.6",
+    "@angular/animations": "21.2.17",
+    "@angular/common": "21.2.17",
+    "@angular/compiler": "21.2.17",
+    "@angular/core": "21.2.17",
+    "@angular/forms": "21.2.17",
+    "@angular/platform-browser": "21.2.17",
+    "@angular/platform-browser-dynamic": "21.2.17",
+    "@angular/router": "21.2.17",
+
+    "@angular/cdk": "21.2.14",
+    "@angular/material": "21.2.14",
+
     "escape-string-regexp": "5.0.0",
     "rxjs": "7.8.2",
-    "three": "0.183.1",
+    "three": "0.184.0",
     "tslib": "2.8.1",
-    "zone.js": "0.16.1"
+    "zone.js": "0.16.2"
   },
   "devDependencies": {
-    "@angular-devkit/core": "21.2.4",
-    "@angular-devkit/schematics": "21.2.4",
+    "@angular/cli": "21.2.14",
+    "@angular/compiler-cli": "21.2.17",
+    "@angular-devkit/core": "21.2.14",
+    "@angular-devkit/schematics": "21.2.14",
+    "@angular/build": "21.2.14",
+    "@schematics/angular": "21.2.14",
+
     "@angular-eslint/builder": "21.3.1",
     "@angular-eslint/eslint-plugin": "21.3.1",
     "@angular-eslint/eslint-plugin-template": "21.3.1",
     "@angular-eslint/schematics": "21.3.1",
     "@angular-eslint/template-parser": "21.3.1",
-    "@angular/build": "21.2.4",
-    "@angular/cli": "21.2.4",
-    "@angular/compiler-cli": "21.2.6",
-    "@schematics/angular": "21.2.4",
-    "@stylistic/eslint-plugin": "5.9.0",
-    "@types/node": "25.3.2",
-    "@types/three": "0.183.1",
-    "@typescript-eslint/eslint-plugin": "8.56.1",
-    "@typescript-eslint/parser": "8.56.1",
-    "browserslist": "4.28.1",
-    "caniuse-lite": "1.0.30001774",
+
     "eslint": "9.39.3",
+    "@typescript-eslint/eslint-plugin": "8.56.0",
+    "@typescript-eslint/parser": "8.56.0",
+    "typescript-eslint": "8.56.0",
+
+    "@stylistic/eslint-plugin": "5.10.0",
+
+    "@types/node": "22.9.0",
+    "@types/three": "0.184.1",
+
+    "typescript": "5.9.3",
+    "ts-node": "10.9.2",
+
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-jsdoc": "62.7.1",
+    "eslint-plugin-jsdoc": "63.0.2",
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-zeta": "file:lint/plugins/eslint-plugin-zeta",
-    "globals": "17.3.0",
-    "ts-node": "10.9.2",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.56.1"
+
+    "globals": "17.6.0",
+    "browserslist": "4.28.2",
+    "caniuse-lite": "1.0.30001799"
   }
 }

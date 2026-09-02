@@ -15,26 +15,32 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { NestedTreeControl } from '@angular/cdk/tree';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Input, NgZone, OnDestroy, inject } from '@angular/core';
-
-
 import { Observable, of, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+import { NestedTreeControl } from '@angular/cdk/tree';
+import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, inject, Input, NgZone, OnDestroy } from '@angular/core';
+import { MatNestedTreeNode, MatTree, MatTreeNodeDef, MatTreeNodeOutlet, MatTreeNodeToggle } from '@angular/material/tree';
+
 import { coerceBoolean } from '../../base';
+import { I18nService, LocaleService, XcI18nContextDirective, XcI18nPipe } from '../../i18n';
+import { XcIconButtonComponent } from '../xc-button/xc-icon-button.component';
+import { XcTemplateComponent } from '../xc-template/xc-template.component';
+import { XcTooltipDirective } from '../xc-tooltip/xc-tooltip.directive';
 import { xcTreeTranslations_deDE } from './locale/xc-translations.de-DE';
 import { xcTreeTranslations_enUS } from './locale/xc-translations.en-US';
 import { XcTreeDataSource, XcTreeNode } from './xc-tree-data-source';
-import { MatTree, MatTreeNodeDef, MatNestedTreeNode, MatTreeNodeToggle, MatTreeNodeOutlet } from '@angular/material/tree';
-import { I18nService, LocaleService, XcI18nContextDirective, XcI18nPipe } from '../../i18n';
-import { XcIconButtonComponent } from '../xc-button/xc-icon-button.component';
-import { XcTooltipDirective } from '../xc-tooltip/xc-tooltip.directive';
-import { NgClass } from '@angular/common';
-import { XcTemplateComponent } from '../xc-template/xc-template.component';
 
 
 export interface XcTreeObserver {
+    /**
+     * Make a specific node readonly.
+     * @param node Node to set readonly state for
+     * @param defaultReadonly Default readonly state
+     */
+    readonlyNode?(node: XcTreeNode, defaultReadonly: boolean): boolean;
+
     /**
      * Make a specific node disabled.
      * Note: This doesn't work vice versa - a node that is created disabled might also miss accessors to modify it.
@@ -109,10 +115,8 @@ export class XcTreeComponent implements OnDestroy {
 
 
     constructor() {
-        const _i18n = this._i18n;
-
-        _i18n.setTranslations(LocaleService.EN_US, xcTreeTranslations_enUS);
-        _i18n.setTranslations(LocaleService.DE_DE, xcTreeTranslations_deDE);
+        this._i18n.setTranslations(LocaleService.EN_US, xcTreeTranslations_enUS);
+        this._i18n.setTranslations(LocaleService.DE_DE, xcTreeTranslations_deDE);
 
         this.zone.runOutsideAngular(() => {
             document.body.addEventListener('keydown', this.keyCatcherOnKeydown);
@@ -153,11 +157,15 @@ export class XcTreeComponent implements OnDestroy {
         return this._i18n;
     }
 
+    get translateLabels(): boolean {
+        return this.dataSource && this.dataSource.translateLabels;
+    }
+
 
     @HostBinding('class.allowselect')
-    @Input('xc-tree-allowselect')
+    @Input({alias: 'xc-tree-allowselect', transform: coerceBoolean})
     set allowSelect(value: boolean) {
-        this._allowSelect = coerceBoolean(value);
+        this._allowSelect = value;
     }
 
 
@@ -166,9 +174,9 @@ export class XcTreeComponent implements OnDestroy {
     }
 
 
-    @Input('xc-tree-multiselect')
+    @Input({alias: 'xc-tree-multiselect', transform: coerceBoolean})
     set multiSelect(value: boolean) {
-        this._multiSelect = coerceBoolean(value);
+        this._multiSelect = value;
     }
 
 
@@ -238,8 +246,13 @@ export class XcTreeComponent implements OnDestroy {
     }
 
 
+    isNodeReadonly(node: XcTreeNode): boolean {
+        const readonly = node.readonly && !this.readonlyMode;
+        return readonly || this.observer && this.observer.readonlyNode && this.observer.readonlyNode(node, readonly);
+    }
+
     isNodeDisabled(node: XcTreeNode): boolean {
-        const disabled = node.readonly && !this.readonlyMode;
+        const disabled = node.disabled && !this.readonlyMode;
         return disabled || this.observer && this.observer.disableNode && this.observer.disableNode(node, disabled);
     }
 
@@ -343,7 +356,7 @@ export class XcTreeComponent implements OnDestroy {
     getAriaPosinset(node: XcTreeNode): number {
         let pos = 1;
         if (node.parent) {
-             
+
             node.parent.children.subscribe(children => children.some((child, i) => {
                 if (child.name === node.name) {
                     pos = i + 1;

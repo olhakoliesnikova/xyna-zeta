@@ -15,9 +15,9 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { I18nService } from '@zeta/i18n';
-
 import { Observable, Subject } from 'rxjs';
+
+import { I18nService } from '@zeta/i18n';
 
 import { ApiService, FullQualifiedName, RuntimeContext, Xo, XoArray, XoDescriber, XoDescriberCache, XoObject, XoStructureArray, XoStructureField, XoStructureObject, XoStructurePrimitive, XoStructureType } from '../../api';
 import { Comparable, defineAccessorProperty } from '../../base/base';
@@ -45,6 +45,7 @@ export class XcStructureTreeDataSource extends XcBaseStructureTreeDataSource {
 
     private static readonly ICON_NAME_ADD = 'add';
     private static readonly ICON_NAME_DELETE = 'delete';
+        private static readonly ICON_NAME_COPY = 'copy';
 
     subtypesCache = new XoDescriberCache<XoStructureType>();
 
@@ -61,8 +62,8 @@ export class XcStructureTreeDataSource extends XcBaseStructureTreeDataSource {
     private readonly _contentChangeSubject = new Subject<void>();
 
 
-    constructor(apiService: ApiService, i18n: I18nService, rtc: RuntimeContext, describers: XoDescriber[], container = new XoArray()) {
-        super(apiService, i18n, rtc, describers, container);
+    constructor(apiService: ApiService, i18n: I18nService, rtc: RuntimeContext, describers: XoDescriber[], container?: XoArray, translateLabels: boolean = true) {
+        super(apiService, i18n, rtc, describers, container ? container : new XoArray(), translateLabels);
     }
 
 
@@ -403,9 +404,9 @@ export class XcStructureTreeDataSource extends XcBaseStructureTreeDataSource {
         // create delete button template for children of arrays
         const parentField = field.parent;
         if (parentField instanceof XoStructureArray) {
-            const iconButtonTemplate = new XcIconButtonTemplate();
-            iconButtonTemplate.iconName = XcStructureTreeDataSource.ICON_NAME_DELETE;
-            iconButtonTemplate.action = () => {
+            const deleteButtonTemplate = new XcIconButtonTemplate();
+            deleteButtonTemplate.iconName = XcStructureTreeDataSource.ICON_NAME_DELETE;
+            deleteButtonTemplate.action = () => {
                 // remove value from array
                 this.container.resolveDelete(field.path);
                 // remove field
@@ -438,14 +439,57 @@ export class XcStructureTreeDataSource extends XcBaseStructureTreeDataSource {
                 }
             };
             // A11y
-            iconButtonTemplate.label = this.i18n?.translate('zeta.xc.tree.remove-element') ?? 'Remove Element';
+            deleteButtonTemplate.label = this.i18n?.translate('zeta.xc.tree.remove-element') ?? 'Remove Element';
             // disabled accessor
             defineAccessorProperty<XcIconButtonTemplate, boolean>(
-                iconButtonTemplate,
+                deleteButtonTemplate,
                 'disabled',
                 () => node.parent.readonly
             );
-            templates.push(iconButtonTemplate);
+            templates.push(deleteButtonTemplate);
+
+
+            const copyButtonTemplate = new XcIconButtonTemplate();
+            copyButtonTemplate.iconName = XcStructureTreeDataSource.ICON_NAME_COPY;
+            copyButtonTemplate.action = () => {
+
+                const parentNode = node.parent;
+
+                // Resolve all limit nodes
+                while (parentNode.limit !== undefined) {
+                    const children = parentNode.children.getValue();
+                    const childNode = children[children.length - 1];
+                    childNode.action();
+                }
+
+                // insert field
+                let copy = this.container.resolve(field.path);
+                copy = copy instanceof Xo ? copy.clone() : copy;
+                const index = parentField.children.indexOf(field);
+                const copiedField = parentField.add(index + 1);
+
+                for (let idx = parentField.children.length -1; idx > index + 1; idx--) {
+                    this.container.resolveAssign(parentField.children[idx].path, this.container.resolve(parentField.children[idx - 1].path));
+                }
+                this.container.resolveAssign(copiedField.path, copy);
+
+                // insert node
+                const childNode = this.createNodeFromField(copiedField, parentNode);
+                const children = parentNode.children.getValue();
+                children.splice(index + 1, 0, childNode);
+                children.forEach((child, idx) => child.name = parentField.children[idx].label);
+                parentNode.children.next(parentNode.children.getValue());
+                this.triggerMarkForChange();
+            }
+            // A11y
+            copyButtonTemplate.label = this.i18n?.translate('zeta.xc.tree.copy-element') ?? 'Copy Element';
+            // disabled accessor
+            defineAccessorProperty<XcIconButtonTemplate, boolean>(
+                copyButtonTemplate,
+                'disabled',
+                () => node.parent.readonly
+            );
+            templates.push(copyButtonTemplate);
         }
         templates.forEach(template => {
             // compact style for all form templates

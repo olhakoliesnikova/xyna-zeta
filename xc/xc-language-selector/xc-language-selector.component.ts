@@ -18,8 +18,6 @@
 
 import { Component, Input, inject } from '@angular/core';
 
-import { environment } from '@environments/environment';
-
 import { SelectableLanguage } from '../../api';
 import { Comparable } from '../../base';
 import { I18nService } from '../../i18n/i18n.service';
@@ -27,6 +25,7 @@ import { XcAutocompleteDataWrapper, XcFormAutocompleteComponent } from '../xc-fo
 import { xcLanguageSelectorTranslations_deDE } from './locale/xc-language-selector-translations.de-DE';
 import { xcLanguageSelectorTranslations_enUS } from './locale/xc-language-selector-translations.en-US';
 import { LocaleService, XcI18nTranslateDirective } from '../../i18n';
+import { ConfigService } from '@zeta/api/config.service';
 
 
 class ComparableLanguage extends Comparable implements SelectableLanguage {
@@ -57,7 +56,7 @@ class ComparableLanguage extends Comparable implements SelectableLanguage {
 export class XcLanguageSelectorComponent {
     private readonly i18n = inject(I18nService);
     readonly locale = inject(LocaleService);
-
+    readonly configService = inject(ConfigService);
 
     @Input() tabIndex?: number = 0;
 
@@ -71,7 +70,7 @@ export class XcLanguageSelectorComponent {
         this.i18n.setTranslations(LocaleService.DE_DE, xcLanguageSelectorTranslations_deDE);
         this.i18n.setTranslations(LocaleService.EN_US, xcLanguageSelectorTranslations_enUS);
 
-        const languages = environment.zeta.auth ? environment.zeta.auth.languages : null;
+        const languages = this.configService.config.zeta.auth ? this.configService.config.zeta.auth.languages : null;
 
         if ((this.hasLanguages = languages?.length > 0)) {
             const found = languages.find(lang => lang.languageKey === locale.language) || languages[0];

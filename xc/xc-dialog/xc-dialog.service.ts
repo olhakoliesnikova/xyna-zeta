@@ -1,3 +1,5 @@
+import { filter, map } from 'rxjs/operators';
+
 /*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Copyright 2023 Xyna GmbH, Germany
@@ -18,10 +20,7 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-
 import { Xo } from '@zeta/api';
-
-import { filter, map } from 'rxjs/operators';
 
 import { AuthEventService } from '../../auth/auth-event.service';
 import { I18nService } from '../../i18n';
@@ -73,8 +72,11 @@ export class XcDialogService {
             autoFocus: true,
             ariaLabel: ariaLabel,
             enterAnimationDuration: '0',
-            exitAnimationDuration: '0'
+            exitAnimationDuration: '0',
             // width, height, ...
+
+            maxWidth: '100vw',
+            maxHeight: '100vh'
         };
 
         if (overrideConfig) {
@@ -97,46 +99,49 @@ export class XcDialogService {
     }
 
 
-    private openMessageDialog<T extends XcMessageDialogComponent<any, any>>(componentType: ComponentType<T>, title: string, message: string, data: any, ariaLabel?: string, details?: string, draggable = false, resizable = false, dialogOptions: XcDialogOptions = {}, overrideConfig?: MatDialogConfig): T {
+    private openMessageDialog<T extends XcMessageDialogComponent<any, any>>(componentType: ComponentType<T>, title: string, message: string, data: any, ariaLabel?: string, details?: string, draggable = false, resizable = false, maximizable = false, maximized = false, dialogOptions: XcDialogOptions = {}, overrideConfig?: MatDialogConfig): T {
         const dialogRef = this.openDialog(componentType, data, ariaLabel, '', overrideConfig);
         dialogRef.componentInstance.title = title;
         dialogRef.componentInstance.message = message;
         dialogRef.componentInstance.details = details;
         dialogRef.componentInstance.draggable = draggable;
         dialogRef.componentInstance.resizable = resizable;
+        dialogRef.componentInstance.maximizable = maximizable;
+        dialogRef.componentInstance.maximized = maximized;
+
         dialogRef.componentInstance.dialogOptions = dialogOptions;
         return dialogRef.componentInstance;
     }
 
 
-    confirm(title: string, message: string, ariaLabel?: string, draggable = false, resizable = false, dialogOptions: XcDialogOptions = {}): XcConfirmDialogComponent {
+    confirm(title: string, message: string, ariaLabel?: string, draggable = false, resizable = false, maximizable = false, maximized = false, dialogOptions: XcDialogOptions = {}): XcConfirmDialogComponent {
         const overrideConfig: MatDialogConfig = {
             ariaDescribedBy: 'xc-confirm-dialog-message-container',
             role: 'dialog'
         };
-        return this.openMessageDialog(XcConfirmDialogComponent, title, message, null, ariaLabel, null, draggable, resizable, dialogOptions, overrideConfig);
+        return this.openMessageDialog(XcConfirmDialogComponent, title, message, null, ariaLabel, null, draggable, resizable, maximizable, maximized, dialogOptions, overrideConfig);
     }
 
 
-    info(title: string, message: string, ariaLabel?: string, details?: string, draggable = false, resizable = false, dialogOptions: XcDialogOptions = {}): XcInfoDialogComponent {
+    info(title: string, message: string, ariaLabel?: string, details?: string, draggable = false, resizable = false, maximizable = false, maximized = false, dialogOptions: XcDialogOptions = {}): XcInfoDialogComponent {
         const overrideConfig: MatDialogConfig = {
             ariaDescribedBy: 'xc-info-dialog-message-container',
             role: 'dialog'
         };
-        return this.openMessageDialog(XcInfoDialogComponent, title, message, null, ariaLabel, details, draggable, resizable, dialogOptions, overrideConfig);
+        return this.openMessageDialog(XcInfoDialogComponent, title, message, null, ariaLabel, details, draggable, resizable, maximizable, maximized, dialogOptions, overrideConfig);
     }
 
 
-    error(message: string, ariaLabel?: string, stackTrace?: string, draggable = false, resizable = false, dialogOptions: XcDialogOptions = {}): XcInfoDialogComponent {
+    error(message: string, ariaLabel?: string, stackTrace?: string, draggable = false, resizable = false, maximizable = false, maximized = false, dialogOptions: XcDialogOptions = {}): XcInfoDialogComponent {
         const overrideConfig: MatDialogConfig = {
             ariaDescribedBy: 'xc-info-dialog-message-container',
             role: 'alertdialog'
         };
-        return this.openMessageDialog(XcInfoDialogComponent, this.i18n.translate(XcDialogService.defaultErrorTitle), message, null, ariaLabel, stackTrace, draggable, resizable, dialogOptions, overrideConfig);
+        return this.openMessageDialog(XcInfoDialogComponent, this.i18n.translate(XcDialogService.defaultErrorTitle), message, null, ariaLabel, stackTrace, draggable, resizable, maximizable, maximized, dialogOptions, overrideConfig);
     }
 
 
-    about(title: string, copyright: string, versions: string, detailsLink?: string, ariaLabel?: string, draggable = false, resizable = false, dialogOptions: XcDialogOptions = {}): XcAboutDialogComponent {
+    about(title: string, copyright: string, versions: string, detailsLink?: string, ariaLabel?: string, draggable = false, resizable = false, maximizable = false, maximized = false, dialogOptions: XcDialogOptions = {}): XcAboutDialogComponent {
         const overrideConfig: MatDialogConfig = {
             ariaDescribedBy: 'xc-about-dialog-message-container',
             role: 'dialog'
@@ -148,7 +153,9 @@ export class XcDialogService {
             detailsLink: detailsLink,
             dialogOptions: dialogOptions,
             draggable: draggable,
-            resizable: resizable
+            resizable: resizable,
+            maximizable: maximizable,
+            maximized: maximized
         };
         return this.openDialog(XcAboutDialogComponent, config, ariaLabel, '', overrideConfig).componentInstance;
     }

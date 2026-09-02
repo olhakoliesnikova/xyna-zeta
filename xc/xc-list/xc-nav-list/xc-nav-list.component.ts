@@ -61,18 +61,18 @@ export class XcNavListComponent extends XcThemeableComponent implements OnInit, 
     /**
      * If set, only the selected item (and its parents) are expanded, the rest will be collapsed automatically
      */
-    @Input('xc-nav-list-autocollapse')
+    @Input({alias: 'xc-nav-list-autocollapse', transform: coerceBoolean})
     set autocollapse(value: boolean) {
-        this._autocollapse = coerceBoolean(value);
+        this._autocollapse = value;
     }
     private _autocollapse = false;
 
     /**
      * If set, nav-list shrinks to icons-only if mouse is not over it
      */
-    @Input('xc-nav-list-shrinkable')
+    @Input({alias: 'xc-nav-list-shrinkable', transform: coerceBoolean})
     set shrinkable(value: boolean) {
-        this._shrinkable = coerceBoolean(value);
+        this._shrinkable = value;
         this.shrink = this._shrinkable;
     }
     get shrinkable(): boolean {

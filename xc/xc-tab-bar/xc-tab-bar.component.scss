@@ -38,9 +38,39 @@
                 background-color: $color-background-default;
                 min-height: 32px;
 
+                .mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron {
+                    border-color: $color-normal;
+                }
+
+                .mat-mdc-tab-header-pagination-disabled .mat-mdc-tab-header-pagination-chevron {
+                    border-color: $color-disabled;
+                }
+
                 .mat-mdc-tab-label-container {
                     .mat-mdc-tab-list {
                         min-width: 0;
+
+
+                        .cdk-keyboard-focused {
+                            box-shadow: inset 0 -2px 0 $color-focus-outline;
+                        }
+
+
+                        .mat-mdc-tab:has(.xc-tab-pinned) {
+                            min-width: 40px;
+                            width: 40px;
+                            max-width: 40px;
+                        }
+
+                        .xc-tab-label {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 100%;
+                            height: 100%;
+                            position: relative;
+                            padding: 0 12px;
+                        }
 
                         .mat-mdc-tab {
                             min-width: 120px;
@@ -52,6 +82,14 @@
                             font-family: $xc-tab-bar-font-family;
                             font-size: $xc-tab-bar-font-size;
                             user-select: none;
+
+                            @if $xc-tab-bar-active-indicator-position ==bottom {
+                                border-bottom: 4px solid $color-background-default;
+                            }
+
+                            @else {
+                                border-top: 4px solid $color-background-default;
+                            }
 
                             &:first-child {
                                 margin-left: 0;
@@ -104,10 +142,14 @@
                                 border-bottom: 1px solid $xc-tab-bar-tab-background-color;
 
                                 .mdc-tab__text-label {
+                                    display: flex;
                                     line-height: normal;
-                                    padding: 0 12px;
+                                    width: 100%;
+                                    height: 100%;
+                                    justify-content: center;
+                                    align-items: center;
 
-                                    >xc-icon {
+                                    xc-icon {
                                         color: $xc-tab-bar-tab-color;
                                         overflow: hidden;
                                     }
@@ -161,6 +203,7 @@
                     overflow: unset;
                     display: flex;
                     border-top: $xc-tab-bar-content-top-border-width solid $xc-tab-bar-content-top-border-color;
+                    border-left: none;
                     background: $xc-tab-bar-content-background-color;
                 }
             }
@@ -170,4 +213,60 @@
             display: none;
         }
     }
+
+    ::ng-deep .mat-mdc-tab-labels {
+        min-height: unset !important;
+    }
+}
+
+::ng-deep .cdk-drag-preview {
+    background-color: $xc-tab-bar-tab-background-color-active;
+    border-radius: 2px;
+    box-shadow:
+        0 6px 16px rgb(0 0 0 / 20%),
+        0 2px 4px rgb(0 0 0 / 15%);
+    opacity: 0.95;
+    overflow: hidden;
+}
+
+::ng-deep .cdk-drag-preview .mdc-tab__content {
+    background-color: $xc-tab-bar-tab-background-color-active;
+    border-bottom: none !important;
+}
+
+::ng-deep .cdk-drag-preview * {
+    color: $xc-tab-bar-tab-color;
+}
+
+::ng-deep .cdk-drag-preview xc-icon-button {
+    display: none !important;
+}
+
+::ng-deep .cdk-drag-placeholder {
+    opacity: 0.35;
+    border: 1px dashed $color-gray-4;
+}
+
+::ng-deep .cdk-drag-animating {
+    transition: transform 150ms ease;
+}
+
+::ng-deep .cdk-drop-list-dragging .mat-mdc-tab:not(.cdk-drag-placeholder) {
+    opacity: 0.85;
+}
+
+::ng-deep .cdk-drag-preview,
+::ng-deep .cdk-drag-preview .mat-mdc-tab,
+::ng-deep .cdk-drag-preview .mdc-tab__content {
+    background-color: $xc-tab-bar-tab-background-color-active !important;
+}
+
+::ng-deep .cdk-drag-placeholder .mdc-tab-indicator,
+::ng-deep .cdk-drag-preview .mdc-tab-indicator {
+    display: none !important;
+}
+
+::ng-deep .cdk-drop-list-dragging xc-icon-button,
+::ng-deep .cdk-drop-list-dragging xc-icon-button button {
+    pointer-events: none !important;
 }

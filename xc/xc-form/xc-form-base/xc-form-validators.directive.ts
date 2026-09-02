@@ -172,10 +172,10 @@ export class XcFormValidatorRequiredDirective extends XcFormValidatorBaseDirecti
         return coerceBoolean(this.required) ? [XcFormValidatorRequired()] : [];
     }
 
-    @Input('xc-form-validator-required')
+    @Input({alias: 'xc-form-validator-required', transform: coerceBoolean})
     @HostBinding('attr.xc-form-validator-required')
     set required(value: boolean) {
-        this._required = coerceBoolean(value);
+        this._required = value;
     }
 
     get required(): boolean {

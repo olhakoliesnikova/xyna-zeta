@@ -1,12 +1,30 @@
-<div [ngClass]="resizable ? 'resizable-dialog':'dialog'" #dialogRoot [xc-resize]="resizable"
-    [xc-resize-options]="dialogOptions.resizeOptions" [xc-drag]="draggable"
-    [xc-drag-options]="dialogOptions.dragOptions" [xc-drag-event-target]="dragEventTarget">
-    <div [ngClass]="{'draggable': draggable}" class="header" (mousedown)="initDrag($event)"
-        (touchstart)="initDrag($event)">
+<div
+    #dialogRoot
+    [ngClass]="resizable ? 'resizable-dialog' : 'dialog'"
+    [xc-resize]="resizable && !maximized"
+    [xc-resize-options]="dialogOptions.resizeOptions"
+    [xc-drag]="draggable && !maximized"
+    [xc-drag-options]="dialogOptions.dragOptions"
+    [xc-drag-event-target]="dragEventTarget"
+>
+    <div
+        class="header"
+        [ngClass]="{ draggable: draggable }"
+        (mousedown)="initDrag($event)"
+        (touchstart)="initDrag($event)"
+    >
         <h2 mat-dialog-title aria-modal="true">
             <ng-content select="[header]"></ng-content>
         </h2>
-        <ng-content select="[aside]"></ng-content>
+        @if (maximizable) {
+            <xc-icon-button
+                [xc-icon-name]="maximized ? 'minimize' : 'maximize'"
+                (click)="toggleMaximize($event)"
+            >
+            </xc-icon-button>
+        }
+
+        <ng-content select="[aside]"> </ng-content>
     </div>
     <mat-dialog-content>
         <ng-content select="[content]"></ng-content>

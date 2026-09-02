@@ -15,11 +15,12 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
+import { Observable, Subject } from 'rxjs';
+
 import { ComponentType } from '@angular/cdk/portal';
 import { InjectionToken, Injector, Optional } from '@angular/core';
 
-import { Observable, Subject } from 'rxjs';
-
+import { XcMenuItem } from '../';
 import { XcDynamicDismissableComponent } from '../shared/xc-dynamic-dismissable.component';
 import { XcItem } from '../shared/xc-item';
 
@@ -27,9 +28,44 @@ import { XcItem } from '../shared/xc-item';
 /** Injection token that can be used to access the data that was passed in to a tab. */
 export const XC_TAB_DATA = new InjectionToken<any>('XcTabData');
 
+export enum XcTabMenuEntry {
+    Close,
+    CloseAll,
+    CloseOthers,
+    CloseLeft,
+    CloseRight,
+
+    Pin,
+
+    ActivateStart,
+    ActivateEnd,
+
+    MoveActions,
+
+    ActivateLeft,
+    ActivateRight,
+    MoveLeft,
+    MoveRight,
+    MoveToStart,
+    MoveToEnd
+}
+
+export interface XcTabContextMenuItem extends XcMenuItem {
+    insertBefore?: XcTabMenuEntry;
+    insertAfter?: XcTabMenuEntry;
+}
 
 export interface XcTabBarItem<D = any> extends XcItem {
+    tabId?: number;
+
+    disabledMenuEntries?: XcTabMenuEntry[];
+
+    customContextMenuItems?: XcTabContextMenuItem[];
+
+    contextMenuTransform?: (items: XcTabMenuItem[]) => XcMenuItem[];
+
     component: ComponentType<XcTabComponent<any, any>>;
+    pinned?: boolean;
     closable?: boolean;
     closeTooltip?: string;
     data?: D;
@@ -38,13 +74,16 @@ export interface XcTabBarItem<D = any> extends XcItem {
     afterDeactivate?: (index: number) => void;
 }
 
+export interface XcTabMenuItem extends XcMenuItem {
+    id?: XcTabMenuEntry;
+    children?: XcTabMenuItem[];
+}
 
 export interface XcTabBarInterface {
     open(item: XcTabBarItem, beforeItem?: XcTabBarItem, inBackground?: boolean): Observable<XcTabComponent<any, any>>;
     close(item: XcTabBarItem, result?: any, selectItem?: XcTabBarItem): Observable<boolean>;
     initialized(): boolean;
 }
-
 
 export class XcTabRef<R = void> {
     private readonly closeSubject = new Subject<R>();

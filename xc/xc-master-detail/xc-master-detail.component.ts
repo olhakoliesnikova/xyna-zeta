@@ -67,9 +67,9 @@ export class XcMasterDetailComponent {
     }
 
 
-    @Input('xc-master-detail-escapable')
+    @Input({alias: 'xc-master-detail-escapable', transform: coerceBoolean})
     set escapable(value: boolean) {
-        this._escapable = coerceBoolean(value);
+        this._escapable = value;
     }
 
 

@@ -345,7 +345,7 @@ export class XoCheckboxDefinitionArray extends XoArray<XoCheckboxDefinition> {
 @XoObjectClass(XoItemDefinition, 'xmcp.forms.datatypes', 'ButtonDefinition')
 export class XoButtonDefinition extends XoItemDefinition {
 
-    getTemplate(data: Xo[]): Observable<XcTemplate> {
+    getTemplate(data: Xo[]): Observable<XcButtonBaseTemplate> {
         if (!this.isHiddenFor(data)) {
             const template = new XcButtonTemplate();
             template.disabled = this.disabled;
@@ -394,7 +394,7 @@ export class XoOpenDetailsButtonDefinition extends XoButtonDefinition {
     }
 
 
-    getTemplate(data: Xo[]): Observable<XcTemplate> {
+    getTemplate(data: Xo[]): Observable<XcButtonTemplate> {
         return super.getTemplate(data).pipe(tap((template: XcButtonBaseTemplate) => {
             if (template) {
                 template.action = () => {
@@ -454,7 +454,7 @@ export class XoOpenDialogButtonDefinition extends XoButtonDefinition {
     }
 
 
-    getTemplate(data: Xo[]): Observable<XcTemplate> {
+    getTemplate(data: Xo[]): Observable<XcButtonTemplate> {
         return super.getTemplate(data).pipe(tap((template: XcButtonBaseTemplate) => {
             if (template) {
                 template.action = () => {
@@ -512,7 +512,7 @@ export class XoStartOrderButtonDefinition extends XoButtonDefinition {
     encodeDataPath: string;
 
 
-    getTemplate(data: Xo[]): Observable<XcTemplate> {
+    getTemplate(data: Xo[]): Observable<XcButtonBaseTemplate> {
         return super.getTemplate(data).pipe(tap((template: XcButtonBaseTemplate) => {
             if (template) {
                 template.action = () => {
@@ -557,7 +557,7 @@ export class XoDefinitionEventButtonDefinition extends XoButtonDefinition {
     onClickEvent: XoDefinitionEventArray = new XoDefinitionEventArray();
 
 
-    getTemplate(data: Xo[]): Observable<XcTemplate> {
+    getTemplate(data: Xo[]): Observable<XcButtonBaseTemplate> {
         return super.getTemplate(data).pipe(tap((template: XcButtonBaseTemplate) => {
             if (template) {
                 template.action = () => {
@@ -589,7 +589,7 @@ export class XoUploadButtonDefinition extends XoButtonDefinition {
     host: string;
 
 
-    getTemplate(data: Xo[]): Observable<XcTemplate> {
+    getTemplate(data: Xo[]): Observable<XcButtonBaseTemplate> {
         return super.getTemplate(data).pipe(tap((template: XcButtonBaseTemplate) => {
             if (template) {
                 template.action = () => {

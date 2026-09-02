@@ -16,12 +16,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
-import { Component, EventEmitter, forwardRef, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, forwardRef, inject, Input, numberAttribute, Output, ViewChild } from '@angular/core';
 import { MatMenu, MatMenuItem } from '@angular/material/menu';
 
 import { coerceBoolean } from '../../base';
 import { XcI18nPipe } from '../../i18n';
 import { XcIconComponent } from '../xc-icon/xc-icon.component';
+import { XcContextMenuService } from './xc-context-menu.service';
 import { XcMenuTriggerDirective } from './xc-menu-trigger.directive';
 import { XcMenu, XcMenuItem, XcMenuOptions, XcMenuOptionsDefault, XcMenuXPosition, XcMenuYPosition } from './xc-menu.types';
 
@@ -33,6 +34,7 @@ import { XcMenu, XcMenuItem, XcMenuOptions, XcMenuOptionsDefault, XcMenuXPositio
     imports: [CommonModule, MatMenu, MatMenuItem, XcMenuTriggerDirective, NgTemplateOutlet, XcIconComponent, XcI18nPipe, forwardRef(() => XcMenuComponent)],
 })
 export class XcMenuComponent {
+    protected readonly contextMenuService = inject(XcContextMenuService);
 
     /*
      * Sadly, there is no support for not overlapping the trigger horizontally.
@@ -43,9 +45,14 @@ export class XcMenuComponent {
     private _menu: XcMenu;
     readonly options: XcMenuOptions = XcMenuOptionsDefault();
 
-    @ViewChild('matMenu', {static: true, read: MatMenu})
+    @ViewChild('matMenu', { static: true, read: MatMenu })
     set menu(value: XcMenu) {
         this._menu = value;
+
+        if (!this.contextMenuService.menu) {
+            this.contextMenuService.menu = this;
+        }
+
         // set custom settings to menu
         this.menu.xNexttoTrigger = this.options.xNexttoTrigger;
         this.menu.yNexttoTrigger = this.options.yNexttoTrigger;
@@ -82,31 +89,31 @@ export class XcMenuComponent {
         return '';
     }
 
-    @Input('xc-menu-x-nextto-trigger')
+    @Input({alias: 'xc-menu-x-nextto-trigger', transform: coerceBoolean})
     set xNexttoTrigger(value: boolean) {
-        this.options.xNexttoTrigger = coerceBoolean(value);
+        this.options.xNexttoTrigger = value;
         if (this.menu) {
             this.menu.xNexttoTrigger = this.options.xNexttoTrigger;
         }
     }
 
-    @Input('xc-menu-y-nextto-trigger')
+    @Input({alias: 'xc-menu-y-nextto-trigger', transform: coerceBoolean})
     set yNexttoTrigger(value: boolean) {
-        this.options.yNexttoTrigger = coerceBoolean(value);
+        this.options.yNexttoTrigger = value;
         if (this.menu) {
             this.menu.yNexttoTrigger = this.options.yNexttoTrigger;
         }
     }
 
-    @Input('xc-menu-with-arrow')
+    @Input({alias: 'xc-menu-with-arrow', transform: coerceBoolean})
     set withArrow(value: boolean) {
-        this.options.withArrow = coerceBoolean(value);
+        this.options.withArrow = value;
         if (this.menu) {
             this.menu.withArrow = this.options.withArrow;
         }
     }
 
-    @Input('xc-menu-x-offset')
+    @Input({alias: 'xc-menu-x-offset', transform: numberAttribute})
     set xOffset(value: number) {
         this.options.xOffset = value;
         if (this.menu) {
@@ -114,7 +121,7 @@ export class XcMenuComponent {
         }
     }
 
-    @Input('xc-menu-y-offset')
+    @Input({alias: 'xc-menu-y-offset', transform: numberAttribute})
     set yOffset(value: number) {
         this.options.yOffset = value;
         if (this.menu) {

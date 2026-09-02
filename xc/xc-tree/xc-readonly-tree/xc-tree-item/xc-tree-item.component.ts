@@ -144,9 +144,9 @@ export class XcTreeItemComponent extends XcTreeNodeComponent implements AfterVie
     }
 
 
-    @Input('xc-tree-item-keep-breaks')
+    @Input({alias: 'xc-tree-item-keep-breaks', transform: coerceBoolean})
     set keepBreaks(value: boolean) {
-        this._keepBreaks = coerceBoolean(value);
+        this._keepBreaks = value;
     }
 
 

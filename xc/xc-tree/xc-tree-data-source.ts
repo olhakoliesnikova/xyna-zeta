@@ -29,6 +29,7 @@ export interface XcTreeNode {
     children?: BehaviorSubject<this[]>;
     value?: XcTemplate[] | any;
     readonly?: boolean;
+    disabled?: boolean;
     tooltip?: string;
     fixed?: boolean;
     limit?: number;
@@ -45,7 +46,7 @@ export abstract class XcTreeDataSource<T extends XcTreeNode> extends XcDataSourc
     readonlyHidden = false;
 
 
-    constructor(readonly i18n?: I18nService) {
+    constructor(readonly i18n?: I18nService, readonly translateLabels?: boolean) {
         super();
     }
 

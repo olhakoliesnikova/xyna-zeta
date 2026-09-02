@@ -15,16 +15,16 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { Component, effect, inject, signal, ViewChild } from '@angular/core';
-
-import { environment } from '@environments/environment';
-
 import { EMPTY, Observable } from 'rxjs';
 import { catchError, filter, finalize } from 'rxjs/operators';
+
+import { Component, effect, inject, signal, ViewChild } from '@angular/core';
 
 import { XcI18nContextDirective, XcI18nTranslateDirective } from '../../i18n/i18n.directive';
 import { I18nParam, I18nService } from '../../i18n/i18n.service';
 import { XcDialogService, XcTabBarItem } from '../../xc';
+import { XcAutocompleteDataWrapper } from '../../xc/xc-form/xc-form-autocomplete/xc-form-autocomplete.component';
+import { XcOptionItemString } from '../../xc/shared/xc-item';
 import { XcButtonComponent } from '../../xc/xc-button/xc-button.component';
 import { XcIconComponent } from '../../xc/xc-icon/xc-icon.component';
 import { XcLanguageSelectorComponent } from '../../xc/xc-language-selector/xc-language-selector.component';
@@ -38,15 +38,20 @@ import { SmartCardLoginTabComponent } from '../forms/smart-card-login-tab.compon
 import { SmartCardLoginComponent } from '../forms/smart-card-login.component';
 import { WorkflowLoginTabComponent } from '../forms/workflow-login-tab.component';
 import { WorkflowLoginComponent } from '../forms/workflow-login.component';
+import { ConfigService } from '@zeta/api/config.service';
 
 
 export interface LoginComponentData {
     username: string;
     password?: string;
+    selectedRole?: string;
+    roleSelectionDataWrapper?: XcAutocompleteDataWrapper<string>;
     disabled?: boolean;
     onEnter: () => void;
     usernameTabIndex: number;
     usernameSuffixTabIndex: number;
+    roleTabIndex?: number;
+    roleSuffixTabIndex?: number;
     passwordTabIndex?: number;
     passwordSuffixTabIndex?: number;
 }
@@ -70,17 +75,27 @@ export class AuthLoginComponent {
     protected readonly authService = inject(AuthService);
     protected readonly dialogService = inject(XcDialogService);
     protected readonly i18n = inject(I18nService);
+    protected readonly configService = inject(ConfigService);
 
-    
+
+    private readonly smartCardRoleDataWrapper = new XcAutocompleteDataWrapper<string>(
+        () => this.smartCardTabItem.data.selectedRole,
+        (role: string) => this.smartCardTabItem.data.selectedRole = role
+    );
+
     readonly smartCardTabItem: LoginTabItem = {
         closable: false,
         component: SmartCardLoginTabComponent,
         name: 'SmartCard',
         data: <LoginComponentData>{
             username: '',
+            selectedRole: undefined,
+            roleSelectionDataWrapper: this.smartCardRoleDataWrapper,
             onEnter: this.login.bind(this),
             usernameTabIndex: 1,
             usernameSuffixTabIndex: 4,
+            roleTabIndex: 2,
+            roleSuffixTabIndex: 5,
         }
     };
 
@@ -123,7 +138,7 @@ export class AuthLoginComponent {
     workflowDomain = '';
 
     private _pending = signal(false);
-    privacyLinkDefined = !!environment.zeta.getPrivacyLink;
+    privacyLinkDefined = !!this.configService.config.zeta.getPrivacyLink;
 
     tabBarItems: Array<XcTabBarItem> = [];
 
@@ -171,15 +186,15 @@ export class AuthLoginComponent {
     }
 
     get useSmartCardLogin(): boolean {
-        return environment.zeta.auth ? environment.zeta.auth.smartCardLogin : false;
+        return this.configService.config.zeta.auth ? this.configService.config.zeta.auth.smartCardLogin : false;
     }
 
     get useCredentialsLogin(): boolean {
-        return environment.zeta.auth ? environment.zeta.auth.credentialsLogin : true;
+        return this.configService.config.zeta.auth ? this.configService.config.zeta.auth.credentialsLogin : true;
     }
 
     get useWorkflowLogin(): boolean {
-        return (environment.zeta.auth && environment.zeta.auth.credentialsWorkflowOptions) ? environment.zeta.auth.credentialsWorkflowOptions.credentialsWorkflowLogin : false;
+        return (this.configService.config.zeta.auth && this.configService.config.zeta.auth.credentialsWorkflowOptions) ? this.configService.config.zeta.auth.credentialsWorkflowOptions.credentialsWorkflowLogin : false;
     }
 
     get useTabBar(): boolean {
@@ -190,10 +205,12 @@ export class AuthLoginComponent {
 
     login() {
         if (this.smartCardMethodUsed) {
+            this.smartCardInfo();
             this.smartCardLogin();
         } else if (this.credentialsMethodUsed) {
             this.credentialsLogin();
         } else if (this.workflowMethodUsed) {
+            this.workflowInfo();
             this.workflowLogin();
         }
     }
@@ -201,7 +218,7 @@ export class AuthLoginComponent {
 
     openPrivacyLink() {
         if (this.privacyLinkDefined) {
-            window.open(environment.zeta.getPrivacyLink(this.i18n.language), '_blank').focus();
+            window.open(this.configService.config.zeta.getPrivacyLink(this.i18n.language), '_blank').focus();
         } else {
             console.log('PrivacyLink is not Defined');
         }
@@ -213,12 +230,29 @@ export class AuthLoginComponent {
             filter(info => !!info)
         ).subscribe(info => {
             this.smartCardTabItem.data.username = info.username || '';
-            this.smartCardDomain = (info.externaldomains || [])[0] || '';
+            const externalDomains = (info.externaldomains || []).filter(domain => !!domain);
+            const domainNames = externalDomains.length > 0
+                ? externalDomains
+                : (info.domains || []).map(domain => domain.name).filter(name => !!name);
+
+            this.smartCardDomain = domainNames[0] || '';
+
+            const domainFromResponse = (info.domains || []).find(domain => domain.name === this.smartCardDomain)
+                || (info.domains || [])[0];
+
+            const roles = (domainFromResponse?.roles || []).filter(role => !!role);
+
+            if (roles.length === 0) {
+                this.smartCardTabItem.data.selectedRole = undefined;
+            } else if (!this.smartCardTabItem.data.selectedRole || !roles.includes(this.smartCardTabItem.data.selectedRole)) {
+                this.smartCardTabItem.data.selectedRole = roles[0];
+            }
+            this.smartCardRoleDataWrapper.values = roles.map(role => XcOptionItemString(role));
         });
     }
 
     workflowInfo() {
-        this.workflowDomain = environment.zeta.auth?.credentialsWorkflowOptions?.credentialsWorkflowDomain;
+        this.workflowDomain = this.configService.config.zeta.auth?.credentialsWorkflowOptions?.credentialsWorkflowDomain;
     }
 
 
@@ -229,8 +263,8 @@ export class AuthLoginComponent {
 
     smartCardLogin(force = false) {
         this.pending = true;
-        const forcedLogin = force || !!(environment.zeta.auth && environment.zeta.auth.useTheForcedLogin);
-        this.authService.smartCardLogin(this.smartCardDomain, forcedLogin).pipe(
+        const forcedLogin = force || !!(this.configService.config.zeta.auth && this.configService.config.zeta.auth.useTheForcedLogin);
+        this.authService.smartCardLogin(this.smartCardDomain, forcedLogin, this.smartCardTabItem.data.selectedRole).pipe(
             catchError(error => {
                 /**
                  * TODO
@@ -259,7 +293,7 @@ export class AuthLoginComponent {
 
     credentialsLogin(force = false) {
         this.pending = true;
-        const forcedLogin = force || !!(environment.zeta.auth && environment.zeta.auth.useTheForcedLogin);
+        const forcedLogin = force || !!(this.configService.config.zeta.auth && this.configService.config.zeta.auth.useTheForcedLogin);
         this.authService.login(this.credentialsTabItem.data.username, this.credentialsTabItem.data.password, forcedLogin).pipe(
             catchError(loginError => {
                 // FIXME: Use Error-Datatype (ZETA-6)
@@ -285,7 +319,7 @@ export class AuthLoginComponent {
 
     workflowLogin(force = false) {
         this.pending = true;
-        const forcedLogin = force || !!(environment.zeta.auth && environment.zeta.auth.useTheForcedLogin);
+        const forcedLogin = force || !!(this.configService.config.zeta.auth && this.configService.config.zeta.auth.useTheForcedLogin);
         this.authService.workflowLogin(this.workflowTabItem.data.username, this.workflowTabItem.data.password, this.workflowDomain, forcedLogin).pipe(
             catchError(loginError => {
                 // FIXME: Use Error-Datatype (ZETA-6)

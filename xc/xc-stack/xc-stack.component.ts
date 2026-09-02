@@ -108,9 +108,9 @@ export class XcStackComponent implements XcStackInterface, AfterViewInit, OnDest
     }
 
 
-    @Input('xc-stack-active')
+    @Input({alias: 'xc-stack-active', transform: coerceBoolean})
     set active(value: boolean) {
-        this._activeSubject.next(coerceBoolean(value));
+        this._activeSubject.next(value);
     }
 
 

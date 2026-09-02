@@ -1,11 +1,12 @@
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { NgClass } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, inject, Input, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, inject, Input, Output, Renderer2, ViewChild } from '@angular/core';
 import { MatDialogActions, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
 
 import { coerceBoolean } from '../../base';
 import { XcDragDirective, XcDragOptions } from '../shared/xc-drag.directive';
 import { XcResizeDirective, XcResizeOptions } from '../shared/xc-resize.directive';
+import { XcIconButtonComponent } from '../xc-button/xc-icon-button.component';
 
 
 export enum XcDialogPositions {
@@ -30,7 +31,7 @@ export interface XcDialogOptions {
     selector: 'xc-dialog-wrapper',
     templateUrl: './xc-dialog-wrapper.component.html',
     styleUrls: ['./xc-dialog-wrapper.component.scss'],
-    imports: [NgClass, XcResizeDirective, XcDragDirective, MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions]
+    imports: [NgClass, XcResizeDirective, XcDragDirective, MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, XcIconButtonComponent]
 })
 export class XcDialogWrapperComponent implements AfterViewInit {
     protected readonly renderer = inject(Renderer2);
@@ -39,24 +40,50 @@ export class XcDialogWrapperComponent implements AfterViewInit {
 
     private _draggable = false;
     private _resizable = false;
+    private _maximized = false;
+    private _maximizable = false;
     private readonly _dialogOptions: XcDialogOptions = {};
 
-    @Input()
+    @Input({transform: coerceBoolean})
     set draggable(value: boolean) {
-        this._draggable = coerceBoolean(value);
+        this._draggable = value;
     }
 
     get draggable(): boolean {
         return this._draggable;
     }
 
-    @Input()
+    @Input({transform: coerceBoolean})
     set resizable(value: boolean) {
-        this._resizable = coerceBoolean(value);
+        this._resizable = value;
     }
 
     get resizable(): boolean {
         return this._resizable;
+    }
+
+    @Input({transform: coerceBoolean})
+    set maximized(value: boolean) {
+        this._maximized = value;
+
+        if (this.dialogRoot) {
+            this.applyMaximizedState();
+        }
+
+        this.maximizedChange.emit(this._maximized);
+    }
+
+    get maximized(): boolean {
+        return this._maximized;
+    }
+
+    @Input({transform: coerceBoolean})
+    set maximizable(value: boolean) {
+        this._maximizable = value;
+    }
+
+    get maximizable(): boolean {
+        return this._maximizable;
     }
 
     @Input('xc-dialog-options')
@@ -95,6 +122,10 @@ export class XcDialogWrapperComponent implements AfterViewInit {
         return this._dialogOptions;
     }
 
+    @Output()
+    maximizedChange = new EventEmitter<boolean>();
+
+
     @ViewChild('dialogRoot', { static: false }) dialogRoot: ElementRef;
 
     dragEventTarget: MouseEvent | TouchEvent;
@@ -105,7 +136,18 @@ export class XcDialogWrapperComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         this.center();
+
+        if (this._maximized) {
+            this.applyMaximizedState();
+        }
     }
+
+    private _preMaximize = {
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0
+    };
 
     center() {
         if (this.dialogRoot) {
@@ -156,5 +198,38 @@ export class XcDialogWrapperComponent implements AfterViewInit {
 
     initDrag(event: MouseEvent | TouchEvent) {
         this.dragEventTarget = event;
+    }
+
+
+    private applyMaximizedState() {
+        if (!this.dialogRoot) return;
+
+        const el = this.dialogRoot.nativeElement;
+
+        if (this._maximized) {
+            // speichern
+            this._preMaximize.top = parseFloat(el.style.top) || 0;
+            this._preMaximize.left = parseFloat(el.style.left) || 0;
+            this._preMaximize.width = el.offsetWidth;
+            this._preMaximize.height = el.offsetHeight;
+
+            // fullscreen
+            this.renderer.setStyle(el, 'top', '0px');
+            this.renderer.setStyle(el, 'left', '0px');
+            this.renderer.setStyle(el, 'width', '100vw');
+            this.renderer.setStyle(el, 'height', '100vh');
+        } else {
+            // restore
+            this.renderer.setStyle(el, 'top', this._preMaximize.top + 'px');
+            this.renderer.setStyle(el, 'left', this._preMaximize.left + 'px');
+            this.renderer.setStyle(el, 'width', this._preMaximize.width + 'px');
+            this.renderer.setStyle(el, 'height', this._preMaximize.height + 'px');
+        }
+    }
+
+
+    toggleMaximize(event: Event) {
+        this.maximized = !this.maximized;
+        event.preventDefault();
     }
 }

@@ -55,9 +55,9 @@ export class XcIconButtonComponent extends XcButtonBaseComponent {
     }
 
 
-    @Input('xc-icon-material')
+    @Input({alias: 'xc-icon-material', transform: coerceBoolean})
     set iconMaterial(value: boolean) {
-        this._iconMaterial = coerceBoolean(value);
+        this._iconMaterial = value;
     }
 
 
@@ -66,9 +66,9 @@ export class XcIconButtonComponent extends XcButtonBaseComponent {
     }
 
 
-    @Input('xc-icon-svg')
+    @Input({alias: 'xc-icon-svg', transform: coerceBoolean})
     set iconSvg(value: boolean) {
-        this._iconSvg = coerceBoolean(value);
+        this._iconSvg = value;
     }
 
 

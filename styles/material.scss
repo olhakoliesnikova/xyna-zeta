@@ -418,3 +418,10 @@ html.cdk-global-scrollblock {
         }
     }
 }
+@media (forced-colors: active) {
+    .cdk-overlay-backdrop.cdk-overlay-dark-backdrop,
+    .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+        background: Canvas !important;
+        opacity: 0.6 !important;
+    }
+}

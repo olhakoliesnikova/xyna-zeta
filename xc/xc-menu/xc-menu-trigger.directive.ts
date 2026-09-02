@@ -15,6 +15,8 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
+import { take } from 'rxjs';
+
 import { FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
 import { Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
 import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
@@ -22,8 +24,11 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { XcMenu, XcMenuComponentInterface } from './xc-menu.types';
 
 
-@Directive({ selector: '[xc-menu-trigger]' })
+@Directive({ selector: '[xc-menu-trigger]', exportAs: 'xcMenuTrigger' })
 export class XcMenuTriggerDirective extends MatMenuTrigger {
+
+    private outsideClickListener?: EventListener;
+    private previousFocusedElement?: HTMLElement;
 
     @HostBinding('attr.aria-haspopup')
     readonly ariaHasPopup = true;
@@ -80,7 +85,7 @@ export class XcMenuTriggerDirective extends MatMenuTrigger {
     // override private function
     [(() => '_setPosition')()](menu: MatMenu, positionStrategy: FlexibleConnectedPositionStrategy) {
         // super call
-         
+
         super['_setPosition'].call(this, menu, positionStrategy);
 
         if (this.triggersSubmenu()) {
@@ -92,7 +97,7 @@ export class XcMenuTriggerDirective extends MatMenuTrigger {
             });
         } else {
             // affects root menus only
-             
+
             const rect = (this['_element'] as ElementRef).nativeElement.getBoundingClientRect();
             positionStrategy._preferredPositions.forEach(preferredPosition => preferredPosition.offsetX = 0);
             // adjust menu's offset-x for the width of the trigger's element
@@ -125,5 +130,70 @@ export class XcMenuTriggerDirective extends MatMenuTrigger {
                 preferredPosition.offsetY += this.xcMenu.yOffset;
             });
         }
+    }
+
+
+    openAt(x: number, y: number): void {
+
+        this.restoreFocus = false;
+        this.previousFocusedElement = document.activeElement as HTMLElement;
+
+        const element = (this['_element'] as ElementRef).nativeElement as HTMLElement;
+
+        // Move the hidden trigger element to the requested screen position.
+        // The Material overlay is positioned relative to this element.
+        element.style.position = 'fixed';
+        element.style.left = `${x}px`;
+        element.style.top = `${y}px`;
+
+        // Context menus should not block subsequent right-clicks with a backdrop.
+        const previous = this.menu.hasBackdrop;
+        this.menu.hasBackdrop = false;
+
+        // Clean up any listener from a previous context menu invocation.
+        if (this.outsideClickListener) {
+            document.removeEventListener('mousedown', this.outsideClickListener, true);
+        }
+
+        // Manually close the menu when clicking outside, since the backdrop is disabled.
+        this.outsideClickListener = (event: MouseEvent) => {
+            const overlayContainer = document.querySelector('.cdk-overlay-container');
+
+            if (overlayContainer && !overlayContainer.contains(event.target as Node)) {
+                document.removeEventListener('mousedown', this.outsideClickListener, true);
+
+                this.outsideClickListener = undefined;
+
+                this.closeMenu();
+            }
+        };
+
+        this.openMenu();
+
+        this.menuClosed.pipe(take(1)).subscribe(() => {
+
+            // Restore original menu configuration and remove temporary listeners.
+            this.menu.hasBackdrop = previous;
+
+            if (this.outsideClickListener) {
+                document.removeEventListener('mousedown', this.outsideClickListener, true);
+
+                this.outsideClickListener = undefined;
+            }
+
+            if (this.previousFocusedElement?.isConnected) {
+                this.previousFocusedElement.focus();
+            }
+        });
+
+        // Force overlay repositioning after moving the hidden trigger element.
+        requestAnimationFrame(() => {
+            this['_overlayRef']?.updatePosition();
+        });
+
+        // Register outside-click handling after the current event has finished.
+        setTimeout(() => {
+            document.addEventListener('mousedown', this.outsideClickListener, true);
+        });
     }
 }

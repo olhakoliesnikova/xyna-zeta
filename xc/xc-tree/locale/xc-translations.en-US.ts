@@ -25,6 +25,7 @@ export const xcTreeTranslations_enUS: I18nTranslation[] = [
     // typescript
     { key: 'zeta.xc.tree.add-element', value: 'Add Element' },
     { key: 'zeta.xc.tree.remove-element', value: 'Remove Element' },
+    { key: 'zeta.xc.tree.copy-element', value: 'Copy Element' },
     { key: 'zeta.xc.tree.expand-collapse-arialabel', value: 'expands and collapses' },
     { key: 'zeta.xc.tree.expand-collapse-tooltip', value: 'Expand/Collapse (recursively via CTRL)' }
 ];

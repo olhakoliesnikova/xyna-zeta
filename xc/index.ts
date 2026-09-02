@@ -109,4 +109,3 @@ export * from './xc-webgl/xc-webgl-font';
 export * from './xc-webgl/xc-webgl-geometry';
 export * from './xc-webgl/xc-webgl-object';
 export * from './xc-webgl/xc-webgl.component';
-export * from './xc.module';

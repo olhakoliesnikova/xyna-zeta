@@ -15,7 +15,7 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, Input, numberAttribute } from '@angular/core';
 
 import { coerceBoolean } from '@zeta/base';
 
@@ -24,6 +24,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { BooleanKeyframeTrack } from 'three';
 
 
 @Component({
@@ -43,7 +44,7 @@ export class XcFormTextareaComponent extends XcFormBaseComponent {
     /**
      * Sets height for the given number of lines
      */
-    @Input('xc-form-textarea-lines')
+    @Input({alias: 'xc-form-textarea-lines', transform: numberAttribute })
     set lines(value: number) {
         this.minLines = value;
         this.maxLines = value;
@@ -67,7 +68,7 @@ export class XcFormTextareaComponent extends XcFormBaseComponent {
      * the optimized height for its current content
      * Note: works only if "xc-form-textarea-autosize" is true
      */
-    @Input('xc-form-textarea-minlines')
+    @Input({alias: 'xc-form-textarea-minlines', transform: numberAttribute })
     set minLines(value: number) {
         this._minLines = value;
     }
@@ -81,7 +82,7 @@ export class XcFormTextareaComponent extends XcFormBaseComponent {
      * the optimized height for its current content
      * Note: works only if "xc-form-textarea-autosize" is true
      */
-    @Input('xc-form-textarea-maxlines')
+    @Input({alias: 'xc-form-textarea-maxlines', transform: numberAttribute })
     set maxLines(value: number) {
         this._maxLines = value;
     }
@@ -95,9 +96,9 @@ export class XcFormTextareaComponent extends XcFormBaseComponent {
      * the optimzed height for the current content
      * Autosize deactivated makes it easier for custom style to show effect
      */
-    @Input('xc-form-textarea-autosize')
+    @Input({alias: 'xc-form-textarea-autosize', transform: coerceBoolean})
     set textareaAutosize(value: boolean) {
-        this._textareaAutosize = coerceBoolean(value);
+        this._textareaAutosize = value;
     }
 
     get textareaAutosize(): boolean {

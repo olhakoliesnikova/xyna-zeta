@@ -64,9 +64,9 @@ export class XcNavListItemComponent extends XcThemeableComponent implements OnIn
     @Input()
     depth: number;
 
-    @Input()
+    @Input({transform: coerceBoolean})
     set shrink(value: boolean) {
-        this._shrink = coerceBoolean(value);
+        this._shrink = value;
     }
     get shrink(): boolean {
         return this._shrink;

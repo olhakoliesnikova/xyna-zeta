@@ -278,9 +278,9 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
      * When enabled, users can select multiple options and values are
      * concatenated with MULTISELECT_FILTER_SEPARATOR ('|').
      */
-    @Input('xc-form-autocomplete-asmultiselect')
+    @Input({alias: 'xc-form-autocomplete-asmultiselect', transform: coerceBoolean})
     set multiSelect(value: boolean) {
-        this._multiSelect = coerceBoolean(value);
+        this._multiSelect = value;
         if (this._multiSelect) {
             this.initMultiSelectOptions();
             // Set dropdown suffix icon so clicking the arrow opens the panel
@@ -608,9 +608,9 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
     }
 
 
-    @Input('xc-form-autocomplete-asinput')
+    @Input({alias: 'xc-form-autocomplete-asinput', transform: coerceBoolean})
     set asInput(value: boolean) {
-        this._asInput = coerceBoolean(value);
+        this._asInput = value;
     }
 
 
@@ -620,9 +620,9 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
 
 
     @HostBinding('class.as-dropdown')
-    @Input('xc-form-autocomplete-asdropdown')
+    @Input({alias: 'xc-form-autocomplete-asdropdown', transform: coerceBoolean})
     set asDropdown(value: boolean) {
-        this._asDropdown = coerceBoolean(value);
+        this._asDropdown = value;
         if (this.asDropdown) {
             this.suffix = 'dropdown';
         }
@@ -634,9 +634,9 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
     }
 
 
-    @Input('xc-form-autocomplete-casesensitive')
+    @Input({alias: 'xc-form-autocomplete-casesensitive', transform: coerceBoolean})
     set caseSensitive(value: boolean) {
-        this._caseSensitive = coerceBoolean(value);
+        this._caseSensitive = value;
     }
 
 
@@ -645,9 +645,9 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
     }
 
 
-    @Input('xc-form-autocomplete-fulltextsearch')
+    @Input({alias: 'xc-form-autocomplete-fulltextsearch', transform: coerceBoolean})
     set fullTextSearch(value: boolean) {
-        this._fullTextSearch = coerceBoolean(value);
+        this._fullTextSearch = value;
     }
 
 
@@ -717,8 +717,10 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
         option.deselect();
     }
 
-
+    autocompleteOpened = false;
+    autocompleteId = 'xc-autocomplete-' + Math.random().toString(36).slice(2);
     openedAutocomplete() {
+        this.autocompleteOpened = true;
         // listen to scroll events to close the options and avoiding that the autocomplete scrolls away
         window.addEventListener('scroll', this.onScrollIfAutocompleteIsOpen, true);
         // restore active item to previously selected item
@@ -741,7 +743,7 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
         // getting the listbox, in which all option elements are
         const listbox = document.body.querySelector('#' + this.trigger.autocomplete.id);
 
-        Array.from(listbox.children).forEach((matOptionElement: HTMLElement) => {
+        Array.from(listbox.children).forEach((matOptionElement: Element) => {
             // which option's box is too small for its content
 
             const mouseEnterMatOptionOneTimeListener = () => {
@@ -786,6 +788,7 @@ export class XcFormAutocompleteComponent extends XcFormBaseInputComponent implem
 
 
     closedAutocomplete() {
+        this.autocompleteOpened = false;
         // do not listen anymore, because the listener is expensive
         window.removeEventListener('scroll', this.onScrollIfAutocompleteIsOpen, true);
         // emit event

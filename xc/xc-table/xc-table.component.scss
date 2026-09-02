@@ -350,4 +350,25 @@
     tr.visibleactions .action-elements {
         display: flex;
     }
+    @media (forced-colors: active) {
+      .text-cell[role="link"] {
+        color: LinkText !important;
+        text-decoration: underline !important;
+        cursor: pointer;
+      }
+
+      .text-cell[role="link"]:focus,
+      .text-cell[role="link"]:focus-visible {
+        outline: 2px solid Highlight !important;
+        outline-offset: 2px;
+      }
+    }
+
+    td.align-right {
+    text-align: right;
+    }
+
+    td.align-center {
+    text-align: center;
+    }
 }

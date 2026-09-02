@@ -15,7 +15,7 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, inject, numberAttribute } from '@angular/core';
 
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Box2, BufferGeometry, Color, Mesh, Object3D, OrthographicCamera, RawShaderMaterial, Scene, Shape, Vector2, Vector3, WebGLRenderer } from 'three';
@@ -1574,7 +1574,7 @@ export class XcGraphComponent {
     }
 
 
-    @Input('xc-graph-columns')
+    @Input({alias: 'xc-graph-columns', transform: numberAttribute})
     set columns(value: number) {
         this._columns = value || 1;
         this.resize();

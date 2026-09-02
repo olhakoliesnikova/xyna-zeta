@@ -35,13 +35,6 @@ import { AuthService } from '../auth.service';
 import { XoXynaProperty, XoXynaPropertyKey } from '../xo/xyna-property.model';
 import { changePassword_translations_de_DE } from './locale/change-password-translations.de-DE';
 import { changePassword_translations_en_US } from './locale/change-password-translations.en-US';
-import { XcDialogWrapperComponent } from '../../xc/xc-dialog/xc-dialog-wrapper.component';
-import { XcI18nContextDirective, XcI18nTranslateDirective } from '../../i18n/i18n.directive';
-import { XcFormDirective } from '../../xc/xc-form/xc-form-base/xc-form.directive';
-import { XcFormInputComponent } from '../../xc/xc-form/xc-form-input/xc-form-input.component';
-import { XcFormValidatorRequiredDirective, XcFormValidatorCustomDirective } from '../../xc/xc-form/xc-form-base/xc-form-validators.directive';
-import { XcButtonComponent } from '../../xc/xc-button/xc-button.component';
-import { XcI18nPipe } from '../../i18n/i18n.pipe';
 
 
 @Component({

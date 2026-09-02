@@ -15,10 +15,10 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { CollectionViewer } from '@angular/cdk/collections';
-
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, filter } from 'rxjs/operators';
+
+import { CollectionViewer } from '@angular/cdk/collections';
 
 import { Xo, XoObject } from '../../api';
 import { Comparable } from '../../base';
@@ -40,6 +40,8 @@ export interface XcTableColumn {
     readonly pre?: boolean;
     readonly filterTooltip?: string;
     readonly filterMultiselect?: boolean;
+    readonly pronunciationLang?: string;
+    readonly align?: string;
 }
 
 
@@ -108,6 +110,7 @@ export abstract class XcTableDataSource<T extends Comparable = Comparable> exten
     protected readonly filters = new Map<string, string>();
     readonly filterEnums = new Map<string, Observable<XcOptionItem[]>>();
     readonly filterEnumsAsInput = new Set<string>();
+    readonly filterEnumsAsMultiselect = new Set<string>();
     readonly moreData = new Subject<void>();
 
     /** skip the first number of entries */
@@ -136,7 +139,7 @@ export abstract class XcTableDataSource<T extends Comparable = Comparable> exten
     stylesFunction: (row: T, path: string) => string[];
 
 
-    constructor(readonly i18n?: I18nService) {
+    constructor(readonly i18n?: I18nService, readonly translateLabels: boolean = true) {
         super(new XcSubSelectionModel<T, string>());
     }
 

@@ -201,9 +201,9 @@ export class XcCanvasComponent implements OnInit, OnDestroy {
     };
 
 
-    @Input('xc-canvas-fitting')
+    @Input({alias: 'xc-canvas-fitting', transform: coerceBoolean})
     set fitting(value: boolean) {
-        this._fittingToParent = coerceBoolean(value);
+        this._fittingToParent = value;
     }
 
     /**

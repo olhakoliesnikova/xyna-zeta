@@ -15,11 +15,10 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { environment } from '@environments/environment';
-
 import { ApiService } from '../api.service';
 import { XoArray, XoArrayClassInterface, XoObject, XoObjectClassInterface, XoSanitizePropertyKey } from './xo-object';
 import { XoStructureArray, XoStructureObject } from './xo-structure';
+import { XynaOptions, ZetaEnvironment } from '../zeta-environment.interfaces';
 
 
 export class XoConsistencyCheck {
@@ -34,14 +33,14 @@ export class XoConsistencyCheck {
         XoConsistencyCheck.messageWarning(clazz, 'property "' + property + '": ' + message);
     }
 
-    static run(apiService: ApiService) {
-        if (environment.zeta.xo.consistencyCheck) {
+    static run(apiService: ApiService, config: XynaOptions) {
+        if (config.consistencyCheck) {
             console.log('xo consistency check...');
             XoConsistencyCheck.objectClasses
                 // filter out classes without rtc, if no xo rtc is given
-                .filter(clazz => environment.zeta.xo.runtimeContext || clazz.rtc)
+                .filter(clazz => config.runtimeContext || clazz.rtc)
                 // get structure for each class separately, because if a single datatype does not exist on the server, the whole request will fail
-                .forEach(clazz => apiService.getStructure(environment.zeta.xo.runtimeContext, [clazz])
+                .forEach(clazz => apiService.getStructure(config.runtimeContext, [clazz])
                     .get(clazz)
                     .subscribe({
                         next: structure => {

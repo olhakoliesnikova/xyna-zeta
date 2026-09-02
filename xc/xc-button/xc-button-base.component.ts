@@ -26,7 +26,7 @@ import { ATTRIBUTE_ARIALABEL, KeyTranslationPair } from '../shared/xc-i18n-attri
 import { XcThemeableComponent } from '../shared/xc-themeable.component';
 
 
-@Component({ 
+@Component({
     template: ''
 })
 export class XcButtonBaseComponent extends XcThemeableComponent implements OnInit, AfterContentInit, OnDestroy {
@@ -105,9 +105,9 @@ export class XcButtonBaseComponent extends XcThemeableComponent implements OnIni
     }
 
 
-    @Input()
+    @Input({transform: coerceBoolean})
     set tabDisabled(value: boolean) {
-        this._tabDisabled = coerceBoolean(value);
+        this._tabDisabled = value;
     }
 
 
@@ -117,9 +117,9 @@ export class XcButtonBaseComponent extends XcThemeableComponent implements OnIni
 
 
     @HostBinding('class.disabled')
-    @Input()
+    @Input({transform: coerceBoolean})
     set disabled(value: boolean) {
-        this._disabled = coerceBoolean(value);
+        this._disabled = value;
     }
 
 
@@ -129,9 +129,9 @@ export class XcButtonBaseComponent extends XcThemeableComponent implements OnIni
 
 
     @HostBinding('class.busy')
-    @Input()
+    @Input({transform: coerceBoolean})
     set busy(value: boolean) {
-        this._busy = coerceBoolean(value);
+        this._busy = value;
     }
 
 
@@ -145,9 +145,9 @@ export class XcButtonBaseComponent extends XcThemeableComponent implements OnIni
     }
 
 
-    @Input('xc-focus-initial')
+    @Input({alias: 'xc-focus-initial', transform: coerceBoolean})
     set focusInitial(value: boolean) {
-        this._focusInitial = coerceBoolean(value);
+        this._focusInitial = value;
     }
 
 

@@ -17,7 +17,6 @@
  */
 import { Component, inject, Injector } from '@angular/core';
 
-import { environment } from '@environments/environment';
 import { ApiService, StartOrderOptionsBuilder, Xo, XoManagedFileID, XoXPRCRuntimeContext, XoXPRCRuntimeContextFromRuntimeContext } from '@zeta/api';
 import { pack } from '@zeta/base';
 import { I18nService } from '@zeta/i18n';
@@ -33,6 +32,7 @@ import { XcFormDirective } from '../../xc-form-base/xc-form.directive';
 import { XcDefinitionProxyComponent } from '../containers/xc-definition-proxy/xc-definition-proxy.component';
 import { XoBaseDefinition, XoDefinition, XoDefinitionBundle, XoDefinitionObserver } from '../xo/base-definition.model';
 import { XoStartOrderButtonDefinition } from '../xo/item-definition.model';
+import { ConfigService } from '@zeta/api/config.service';
 
 
 @Component({
@@ -45,6 +45,7 @@ export class XcDialogDefinitionComponent extends XcDialogComponent<Xo[], XoDefin
     private readonly api = inject(ApiService);
     private readonly dialogs = inject(XcDialogService);
     private readonly i18n = inject(I18nService);
+    private readonly configService = inject(ConfigService);
 
 
     header = '';
@@ -90,7 +91,7 @@ export class XcDialogDefinitionComponent extends XcDialogComponent<Xo[], XoDefin
 
 
     getDefaultRTC(): XoXPRCRuntimeContext {
-        return XoXPRCRuntimeContextFromRuntimeContext(environment.zeta.xo.runtimeContext);
+        return XoXPRCRuntimeContextFromRuntimeContext(this.configService.config.zeta.xo.runtimeContext);
     }
 
 

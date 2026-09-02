@@ -59,7 +59,10 @@
       (focus)="onfocus($event)"
       (blur)="onblur($event)"
       [readonly]="readonly"
-      [attr.aria-label]="ariaLabel"
+      [attr.aria-label]="ariaLabel || label"
+      [attr.aria-controls]="autocompleteId"
+      [attr.aria-expanded]="autocompleteOpened ? 'true' : 'false'"
+      [attr.aria-haspopup]="'listbox'"
       [tabIndex]="(readonly || disabled) ? -1 : tabIndex"
       [required]="required">
 
@@ -69,6 +72,7 @@
     </div>
 
     <mat-autocomplete class="zeta-scrollbar" #auto="matAutocomplete"
+      [id]="autocompleteId"
       (optionSelected)="optionSelected($event.option)"
       [displayWith]="optionName"
       (opened)="openedAutocomplete()"

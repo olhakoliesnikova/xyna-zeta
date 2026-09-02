@@ -31,6 +31,8 @@ export interface XcAboutDialogConfig {
     detailsLink?: string;
     draggable: boolean;
     resizable: boolean;
+    maximizable: boolean;
+    maximized: boolean;
     dialogOptions?: XcDialogOptions;
 }
 

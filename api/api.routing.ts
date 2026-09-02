@@ -20,6 +20,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { ApiInterceptor } from './api.interceptor';
 import { RightsInterceptor } from './rights.interceptor';
+import { inject, provideAppInitializer } from '@angular/core';
+import { ConfigService } from './config.service';
 
 
 export const ApiRoutes: Routes = [
@@ -33,5 +35,9 @@ export const ApiRoutingModules = [
 
 export const ApiRoutingProviders = [
     { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: RightsInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: RightsInterceptor, multi: true },
+     provideAppInitializer(() => {
+      const configService: ConfigService = inject(ConfigService);
+      return configService.initialize();
+    })
 ];

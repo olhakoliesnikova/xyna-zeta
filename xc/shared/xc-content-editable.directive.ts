@@ -68,9 +68,9 @@ export class XcContentEditableDirective {
     }
 
 
-    @Input('xc-content-editable-multiline')
+    @Input({alias: 'xc-content-editable-multiline', transform: coerceBoolean})
     set multiline(value: boolean) {
-        this._multiline = coerceBoolean(value);
+        this._multiline = value;
     }
 
 

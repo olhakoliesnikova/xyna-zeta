@@ -15,8 +15,6 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { environment } from '@environments/environment';
-
 import { XoObject, XoObjectClass, XoProperty } from '../../api';
 
 
@@ -36,12 +34,12 @@ export class XoLoginRequest extends XoObject {
     path: string;
 
 
-    static withCredentials(username: string, password: string, force = false): XoLoginRequest {
+    static withCredentials(username: string, password: string, path: string, force = false): XoLoginRequest {
         const request = new XoLoginRequest();
         request.username = username;
         request.password = password;
         request.force = force;
-        request.path = environment.zeta.auth ? environment.zeta.auth.pathToken : '/';
+        request.path = path;
         return request;
     }
 }

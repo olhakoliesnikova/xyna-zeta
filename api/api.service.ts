@@ -18,7 +18,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 
-import { environment } from '@environments/environment';
 import { XoEncryptionData } from '@zeta/api/xo/encryption-data.model';
 
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
@@ -35,6 +34,7 @@ import { XoManagedFileID } from './xo/xo-managed-file-id';
 import { Xo, XoArray, XoArrayClassInterface, XoClassInterface, XoClassInterfaceFrom, XoDerivedClassInterfaceFrom, XoJson, XoObject } from './xo/xo-object';
 import { XoRuntimeContext, XoRuntimeContextArray } from './xo/xo-runtime-context';
 import { XoStructureObject, XoStructureType } from './xo/xo-structure';
+import { ConfigService } from './config.service';
 
 
 export type XynaMonitoringLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;
@@ -241,10 +241,11 @@ export interface RuntimeContextSelectionSettings {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
     private readonly http = inject(HttpClient);
-
+    private readonly configService = inject(ConfigService);
 
     private readonly runtimeContextSubject = new BehaviorSubject<RuntimeContext>(null);
     readonly runtimeContextSelectionSubject = new Subject<(settings: RuntimeContextSelectionSettings) => void>();
+
 
 
     constructor() {
@@ -418,7 +419,7 @@ export class ApiService {
                 undefined,
                 XoRuntimeContextArray
             ).pipe(
-                shareReplay(1) 
+                shareReplay(1)
             );
         }
 
@@ -454,9 +455,9 @@ export class ApiService {
             'priority': options.priority
         };
 
-        return this.http.post(url, payload).pipe(
+        return this.http.post<StartOrderResult<XoJson> & XoJson>(url, payload).pipe(
             // discard results with error message unless explicitely requested
-            filter((result: StartOrderResult<XoJson>) =>
+            filter((result: StartOrderResult<XoJson> & XoJson) =>
                 !result.errorMessage || options.withErrorMessage
             ),
             // convert legacy format to a start order response, if needed
@@ -641,7 +642,7 @@ export class ApiService {
      */
     private uploadFileToXyna(file?: File, host?: string): Observable<FileResult> {
 
-        const uploadUrl: string = (host ? host + '/' : environment.zeta.url) + 'upload';
+        const uploadUrl: string = (host ? host + '/' : this.configService.config.zeta.url) + 'upload';
 
         const subject: Subject<FileResult> = new Subject();
         let fileName = '';
@@ -746,7 +747,7 @@ export class ApiService {
 
 
     download(managedFileId: XoManagedFileID, host?: string) {
-        const subdirectory = getSubdirectory(environment.zeta.url);
+        const subdirectory = getSubdirectory(this.configService.config.zeta.url);
         window.location.href = (host || '') + '/' + subdirectory + 'download?p0=' + managedFileId.iD;
     }
 
@@ -756,7 +757,7 @@ export class ApiService {
     // =================================================================================================================
 
     protected crypt(data: XoEncryptionData, endpoint: string): Observable<XoEncryptionData> {
-        return this.http.post(endpoint, data.encode()).pipe(
+        return this.http.post<XoJson>(endpoint, data.encode()).pipe(
             map((result: XoJson) =>
                 new XoEncryptionData().decode(result)
             ),

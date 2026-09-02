@@ -1,18 +1,63 @@
-<mat-tab-group animationDuration="0" (keyup.delete)="closeFocusedTab()">
-  @for (item of items; track item) {
-    <mat-tab [disabled]="item.disabled">
-      <ng-template mat-tab-label>
-        <xc-icon [xc-icon-name]="item.icon" [xc-icon-style]="item.iconStyle" xc-icon-size="small" [xc-tooltip]="getTooltip(item)" (mouseup)="mouseup($event, item)">{{item.name}}</xc-icon>
-        @if (item.closable) {
-          <xc-icon-button xc-tooltip="{{item.closeTooltip || ('zeta.xc-tab-bar.close' | xcI18n:item.name)}}" xc-icon-name="close" xc-icon-size="small" xc-button-aria-label=" " (click)="close(item).subscribe()" />
-        }
-      </ng-template>
-      @if (isComponentInitialized(item)) {
-        <ng-container [ngComponentOutlet]="getComponent(item)" [ngComponentOutletInjector]="getComponentInjector(item)" />
-      }
-    </mat-tab>
-  }
-  @if (busy) {
-    <mat-tab aria-labelledby="busy" disabled><ng-template mat-tab-label><xc-spinner /></ng-template></mat-tab>
-  }
+<mat-tab-group
+    #tabGroup
+    animationDuration="0"
+    (keyup.delete)="closeFocusedTab()"
+    cdkDropList
+    [cdkDropListDisabled]="!reorderable"
+    cdkDropListOrientation="horizontal"
+    cdkDropListElementContainer=".mat-mdc-tab-labels"
+    (cdkDropListDropped)="drop($event)"
+>
+    @for (item of items; track item.tabId) {
+        <mat-tab [disabled]="item.disabled">
+            <ng-template mat-tab-label>
+                <div
+                    class="xc-tab-label"
+                    xc-context-menu-trigger
+                    [disabled]="!contextMenu"
+                    (beforeOpen)="onBeforeOpen(item)"
+                >
+                    <xc-icon
+                        cdkDrag
+                        [cdkDragDisabled]="!reorderable"
+                        cdkDragRootElement=".mat-mdc-tab"
+                        [xc-icon-name]="getIcon(item)"
+                        [xc-icon-style]="item.iconStyle"
+                        xc-icon-size="small"
+                        [xc-tooltip]="getTooltip(item)"
+                        (mouseup)="mouseup($event, item)"
+                        [class.xc-tab-pinned]="item.pinned"
+                    >
+                        @if (!item.pinned) {
+                            {{ item.name }}
+                        }
+                    </xc-icon>
+                    @if (item.closable && !item.pinned) {
+                        <xc-icon-button
+                            xc-tooltip="{{
+                                item.closeTooltip ||
+                                    ('zeta.xc-tab-bar.close-tooltip'
+                                        | xcI18n: item.name)
+                            }}"
+                            xc-icon-name="close"
+                            xc-icon-size="small"
+                            xc-button-aria-label=" "
+                            (click)="close(item).subscribe()"
+                        />
+                    }
+                </div>
+            </ng-template>
+            @if (isComponentInitialized(item)) {
+                <ng-container
+                    [ngComponentOutlet]="getComponent(item)"
+                    [ngComponentOutletInjector]="getComponentInjector(item)"
+                />
+            }
+        </mat-tab>
+    }
+    @if (busy) {
+        <mat-tab aria-labelledby="busy" disabled
+            ><ng-template mat-tab-label><xc-spinner /></ng-template
+        ></mat-tab>
+    }
 </mat-tab-group>

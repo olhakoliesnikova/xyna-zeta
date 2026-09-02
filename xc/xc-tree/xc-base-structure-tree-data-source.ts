@@ -34,8 +34,8 @@ export abstract class XcBaseStructureTreeDataSource<T extends XcTreeNode = XcTre
     structureFallbackFunction: (idx: number) => typeof XoStructureObject | typeof XoStructureArray;
 
 
-    constructor(protected apiService: ApiService, i18n: I18nService, public rtc: RuntimeContext, public describers: XoDescriber[], public container = new XoArray()) {
-        super(i18n);
+    constructor(protected apiService: ApiService, i18n: I18nService, public rtc: RuntimeContext, public describers: XoDescriber[], public container = new XoArray(), translateLabels: boolean = true) {
+        super(i18n, translateLabels);
     }
 
 
@@ -73,7 +73,7 @@ export abstract class XcBaseStructureTreeDataSource<T extends XcTreeNode = XcTre
         this.data = this.describers
             .filter(describer => describer)
             .map((describer, idx) => {
-                const array = this.container.data;
+                const array = this.container ? this.container.data : [];
                 // determine structure class for entry in container
                 let clazz = this.structureFallbackFunction?.(idx) ?? this.structureFallback;
                 if (array[idx] instanceof XoObject) {

@@ -25,5 +25,7 @@ export abstract class XcMessageDialogComponent<R, D> extends XcDialogComponent<R
     details = '';
     draggable = true;
     resizable = true;
+    maximizable = true;
+    maximized = false;
     dialogOptions: XcDialogOptions = {};
 }

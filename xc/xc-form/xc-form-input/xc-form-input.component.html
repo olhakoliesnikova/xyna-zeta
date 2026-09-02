@@ -3,7 +3,7 @@
 
   <input matInput autocomplete="off" [type]="type" [placeholder]="placeholder" [formControl]="formControl"
     (focus)="focus.emit($event)" (blur)="blur.emit($event)" (keydown)="onkeydown($event)"
-    [tabIndex]="(readonly || disabled) ? -1 : tabIndex" [attr.aria-label]="ariaLabel" [readonly]="readonly"
+    [tabIndex]="disabled ? -1 : tabIndex" [attr.aria-label]="ariaLabel" [readonly]="readonly"
     [required]="required">
 
   @if (errorVisible) {

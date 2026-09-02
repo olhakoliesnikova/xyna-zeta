@@ -18,8 +18,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { environment } from '@environments/environment';
-
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
@@ -31,6 +29,7 @@ import { XcStackComponent } from '../../../../xc-stack/xc-stack.component';
 import { XcComponentTemplate } from '../../../../xc-template/xc-template';
 import { XoFormDefinition } from '../../xo/containers.model';
 import { DefinitionStackItemComponentData, XcDefinitionStackItemComponent } from '../xc-definition-stack-item/xc-definition-stack-item.component';
+import { ConfigService } from '@zeta/api/config.service';
 
 
 @Component({
@@ -44,6 +43,7 @@ export class XcDefinitionStackMasterComponent extends RouteComponent implements 
     private readonly cdr = inject(ChangeDetectorRef);
     private readonly route = inject(ActivatedRoute);
     private readonly api = inject(ApiService);
+    private readonly configService = inject(ConfigService);
 
 
     readonly stackDataSource = new XcStackDataSource();
@@ -60,7 +60,7 @@ export class XcDefinitionStackMasterComponent extends RouteComponent implements 
             filter(data => data.fqn)
         ).subscribe(data => {
             this.api.startOrder(
-                environment.zeta.xo.runtimeContext,
+                this.configService.config.zeta.xo.runtimeContext,
                 data.fqn,
                 data.input,
                 null,

@@ -26,7 +26,7 @@
           xc-icon-size="small"
           matTreeNodeToggle
           [matTreeNodeToggleRecursive]="recursiveToggling"
-          [xc-button-aria-label]="i18n.translate('zeta.xc.tree.expand-collapse-arialabel') + ' ' + i18n.translate(node.name)"
+          [xc-button-aria-label]="i18n.translate('zeta.xc.tree.expand-collapse-arialabel') + ' ' + (translateLabels ? i18n.translate(node.name) : node.name)"
           [xc-tooltip]="i18n.translate('zeta.xc.tree.expand-collapse-tooltip')"
           xc-tooltip-showdelay="1000"
         ></xc-icon-button>
@@ -37,15 +37,15 @@
           [color]="readonlyMode ? 'invert' : 'normal'"
           xc-icon-name="accordion"
           xc-icon-size="small"
-          [xc-button-aria-label]="i18n.translate('shows') + ' ' + i18n.translate(node.name)"
+          [xc-button-aria-label]="i18n.translate('shows') + ' ' + (translateLabels ? i18n.translate(node.name) : node.name)"
           xc-tooltip="{{'tooltip-show' | xcI18n}}"
           xc-tooltip-showdelay="500"
         ></xc-icon-button>
       }
       <div class="child" [ngClass]="node.classes || []" [class.fixed]="node.fixed">
         <!-- label -->
-        <label [class.disabled]="isNodeDisabled(node)" [class.truncated]="!!node.value">
-          <span>{{i18n.translate(node.name)}}</span>
+        <label [class.disabled]="isNodeDisabled(node)" [class.readonly]="isNodeReadonly(node)" [class.truncated]="!!node.value">
+          <span>{{translateLabels ? i18n.translate(node.name) : node.name}}</span>
         </label>
 
         <!-- tooltip icon or padding -->
@@ -72,6 +72,7 @@
         @for (template of node.value; let i = $index; track i) {
           <xc-template
             [xc-template-instance]="template"
+            [xc-template-readonly]="isNodeReadonly(node)"
             [xc-template-disabled]="isNodeDisabled(node)"
             [xc-template-aria-label]="getTemplateAriaLabelByNode(node)"
           ></xc-template>

@@ -62,6 +62,7 @@ export class XcTemplateComponent {
     };
 
     private _instance: XcTemplate | unknown;
+    private _readonly = false;
     private _disabled = false;
     private _markForCheckSubscription: Subscription;
 
@@ -90,9 +91,19 @@ export class XcTemplateComponent {
     }
 
 
-    @Input('xc-template-disabled')
+    @Input({alias: 'xc-template-readonly', transform: coerceBoolean})
+    set readonly(value: boolean) {
+        this._readonly = value;
+    }
+
+    get readonly(): boolean {
+        return this._readonly;
+    }
+
+
+    @Input({alias: 'xc-template-disabled', transform: coerceBoolean})
     set disabled(value: boolean) {
-        this._disabled = coerceBoolean(value);
+        this._disabled = value;
     }
 
 

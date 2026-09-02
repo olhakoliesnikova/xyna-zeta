@@ -15,20 +15,21 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-
-import { environment } from '@environments/environment';
-
+import { HttpContextToken, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { ConfigService } from '@zeta/api/config.service';
 import { Observable } from 'rxjs';
 
 
+export const SKIP_API_INTERCEPTOR = new HttpContextToken<boolean>(() => false);
+
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
+    private readonly configService = inject(ConfigService);
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (req.responseType !== 'text') {
-            req = req.clone({ url: environment.zeta.url + req.url });
+        if (req.responseType !== 'text' && !req.context.get(SKIP_API_INTERCEPTOR)) {
+            req = req.clone({ url: this.configService.config.zeta.url + req.url });
         }
         return next.handle(req);
     }

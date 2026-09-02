@@ -20,6 +20,7 @@ import { Component, Injector, inject } from '@angular/core';
 import { XcTabComponent } from '../../xc';
 import { LoginComponentData } from '../login/auth-login.component';
 import { XcFormInputComponent } from '../../xc/xc-form/xc-form-input/xc-form-input.component';
+import { XcFormAutocompleteComponent } from '../../xc/xc-form/xc-form-autocomplete/xc-form-autocomplete.component';
 import { XcI18nTranslateDirective } from '../../i18n/i18n.directive';
 
 
@@ -27,7 +28,7 @@ import { XcI18nTranslateDirective } from '../../i18n/i18n.directive';
     selector: 'smart-card-login-tab',
     templateUrl: './smart-card-login.component.html',
     styleUrls: ['./smart-card-login.component.scss'],
-    imports: [XcFormInputComponent, XcI18nTranslateDirective]
+    imports: [XcFormInputComponent, XcFormAutocompleteComponent, XcI18nTranslateDirective]
 })
 export class SmartCardLoginTabComponent extends XcTabComponent<void, LoginComponentData> {
 

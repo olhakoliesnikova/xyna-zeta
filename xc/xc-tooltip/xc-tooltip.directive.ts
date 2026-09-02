@@ -1,3 +1,5 @@
+import { Subscription } from 'rxjs';
+
 /*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Copyright 2023 Xyna GmbH, Germany
@@ -15,9 +17,7 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { AfterViewInit, Directive, ElementRef, inject, Input, NgZone, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { AfterViewInit, Directive, ElementRef, inject, Input, NgZone, numberAttribute, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
 
 import { A11yService, ScreenreaderPriority } from '../../a11y';
 import { coerceBoolean, isArray, isObject, isString, retrieveFocusableElements } from '../../base';
@@ -122,9 +122,9 @@ export class XcTooltipDirective implements OnInit, AfterViewInit, OnDestroy {
         return isString(this._tooltip.key) ? this._tooltip.translated : this._tooltip.key;
     }
 
-    @Input('xc-tooltip-islabel')
+    @Input({alias: 'xc-tooltip-islabel', transform: coerceBoolean})
     set tooltipIsLabel(value: boolean) {
-        this._isLabel = coerceBoolean(value);
+        this._isLabel = value;
     }
 
 
@@ -133,9 +133,9 @@ export class XcTooltipDirective implements OnInit, AfterViewInit, OnDestroy {
      * in some widgets (like <xc-tree>) the tooltip is only spoken out if the source element is focused before
      * the tooltip appears, which is not the case. xc-tooltip-impolite rea
      */
-    @Input('xc-tooltip-impolite')
+    @Input({alias: 'xc-tooltip-impolite', transform: coerceBoolean})
     set impolite(value: boolean) {
-        this._impolite = coerceBoolean(value);
+        this._impolite = value;
     }
 
 
@@ -167,19 +167,19 @@ export class XcTooltipDirective implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    @Input('xc-tooltip-disabled')
+    @Input({alias: 'xc-tooltip-disabled', transform: coerceBoolean})
     set _xc_disabled(value: boolean) {
-        this._disabled = coerceBoolean(value);
+        this._disabled = value;
     }
 
-    @Input('xc-tooltip-showdelay')
+    @Input({alias: 'xc-tooltip-showdelay', transform: numberAttribute})
     set _xc_showDelay(value: number) {
-        this._showDelay = isString(value) ? parseInt(value, 10) : value;
+        this._showDelay = value;
     }
 
-    @Input('xc-tooltip-hidedelay')
+    @Input({alias: 'xc-tooltip-hidedelay', transform: numberAttribute})
     set _xc_hideDelay(value: number) {
-        this._hideDelay = isString(value) ? parseInt(value, 10) : value;
+        this._hideDelay = value;
     }
 
     @Input('xc-tooltip-class')
@@ -389,7 +389,12 @@ export class XcTooltipDirective implements OnInit, AfterViewInit, OnDestroy {
 
 
             // adding it to the dom so that its bounding rect can be calculated
-            document.body.appendChild(localCurrentTemplateElement);
+            const overlayWrapper =
+                this.focusableElement.closest('.cdk-global-overlay-wrapper')
+                ?? this.focusableElement.closest('.cdk-overlay-container')
+                ?? document.body;
+
+            overlayWrapper.appendChild(localCurrentTemplateElement);
             this.stack.push(localCurrentTemplateElement);
 
             const origin = this.focusableElement.getBoundingClientRect();

@@ -136,9 +136,9 @@ export class XcPanelComponent implements AfterViewInit, AfterContentInit, OnDest
     }
 
     @HostBinding('class.collapsable')
-    @Input('xc-panel-collapsable')
+    @Input({alias: 'xc-panel-collapsable', transform: coerceBoolean})
     set collapsable(value: boolean) {
-        this._collapsable = coerceBoolean(value);
+        this._collapsable = value;
         if (this._headerElement) {
             if (this.collapsable) {
                 this._headerElement.prepend(this._toggleButtonElement);
@@ -168,9 +168,9 @@ export class XcPanelComponent implements AfterViewInit, AfterContentInit, OnDest
 
 
     @HostBinding('class.collapsed')
-    @Input('xc-panel-collapsed')
+    @Input({alias: 'xc-panel-collapsed', transform: coerceBoolean})
     set collapsed(value: boolean) {
-        this._collapsed = coerceBoolean(value);
+        this._collapsed = value;
         if (this._toggleButtonElement && this.collapsable) {
             this._toggleButtonElement.setAttribute('aria-expanded', this.collapsed ? 'false' : 'true');
         }

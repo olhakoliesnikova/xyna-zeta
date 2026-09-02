@@ -1,4 +1,6 @@
 
+import { Observable } from 'rxjs';
+
 /*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Copyright 2023 Xyna GmbH, Germany
@@ -16,78 +18,61 @@
  * limitations under the License.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
-import { Component, HostListener, inject, InjectionToken } from '@angular/core';
+import { Component, HostListener, inject, InjectionToken, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { Observable } from 'rxjs';
-
 import { XcDynamicDismissableComponent } from '../shared/xc-dynamic-dismissable.component';
+import { XcDialogWrapperComponent } from './xc-dialog-wrapper.component';
 
 
 @Component({
     template: ''
 })
-export abstract class XcDialogComponent<R = void, D = void> extends XcDynamicDismissableComponent<R, D> {
+
+export abstract class XcDialogComponent<R = void, D = void>
+    extends XcDynamicDismissableComponent<R, D> {
 
     private readonly dialogRef = inject(MatDialogRef<any>);
 
-    private _maximized = false;
-    private _preMaximizeRootWidth: number;
-    private _preMaximizeRootHeight: number;
-    private _preMaximizePageX: number;
-    private _preMaximizePageY: number;
+    @ViewChild(XcDialogWrapperComponent)
+    private wrapper: XcDialogWrapperComponent;
+
+    protected _maximized = false;
 
     constructor() {
         super();
     }
 
 
+    ngAfterViewInit() {
+        if (this.wrapper) {
+            this.wrapper.maximizedChange.subscribe(value => {
+                this._maximized = value;
+            });
+        }
+    }
+
     protected getToken(): InjectionToken<D> {
         return MAT_DIALOG_DATA;
     }
-
 
     @HostListener('keydown.Escape')
     dismiss(result?: R) {
         this.dialogRef.close(result);
     }
 
-
     afterDismiss(): Observable<R> {
         return this.dialogRef.afterClosed();
     }
 
-    toggleMaximize(event) {
-        const element = document.querySelector('xc-dialog-wrapper').firstChild;
 
-        if (this._maximized) {
-            this._revertMaximize(element as HTMLElement);
-        } else {
-            this._maximize(element as HTMLElement);
+    toggleMaximize(event: Event) {
+        this._maximized = !this._maximized;
+
+        if (this.wrapper) {
+            this.wrapper.maximized = this._maximized;
         }
+
         event.preventDefault();
-    }
-
-    private _maximize(element: HTMLElement) {
-        this._preMaximizePageX = parseFloat(element.style.top);
-        this._preMaximizePageY = parseFloat(element.style.left);
-        this._preMaximizeRootWidth = element.offsetWidth;
-        this._preMaximizeRootHeight = element.offsetHeight;
-
-        element.style.top = '0px';
-        element.style.left = '0px';
-        element.style.width = '100vw';
-        element.style.height = '100vh';
-
-        this._maximized = true;
-    }
-
-    private _revertMaximize(element: HTMLElement) {
-        element.style.top = this._preMaximizePageX + 'px';
-        element.style.left = this._preMaximizePageY + 'px';
-        element.style.width = this._preMaximizeRootWidth + 'px';
-        element.style.height = this._preMaximizeRootHeight + 'px';
-
-        this._maximized = false;
     }
 }

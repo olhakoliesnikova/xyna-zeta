@@ -114,9 +114,8 @@ export class XcCheckboxComponent extends XcThemeableComponent implements OnInit,
     }
 
 
-    @Input()
+    @Input({transform: coerceBoolean})
     set checked(value: boolean) {
-        value = coerceBoolean(value);
         if (this._checked !== value) {
             this._checked = value;
         }
@@ -128,10 +127,10 @@ export class XcCheckboxComponent extends XcThemeableComponent implements OnInit,
     }
 
 
-    @Input()
+    @Input({transform: coerceBoolean})
     @HostBinding('class.disabled')
     set disabled(value: boolean) {
-        this._disabled = coerceBoolean(value);
+        this._disabled = value;
     }
 
 
@@ -140,10 +139,10 @@ export class XcCheckboxComponent extends XcThemeableComponent implements OnInit,
     }
 
 
-    @Input()
+    @Input({transform: coerceBoolean})
     @HostBinding('class.readonly')
     set readonly(value: boolean) {
-        this._readonly = coerceBoolean(value);
+        this._readonly = value;
     }
 
 
@@ -152,9 +151,9 @@ export class XcCheckboxComponent extends XcThemeableComponent implements OnInit,
     }
 
 
-    @Input()
+    @Input({transform: coerceBoolean})
     set indeterminate(value: boolean) {
-        this._indeterminate = coerceBoolean(value);
+        this._indeterminate = value;
     }
 
 

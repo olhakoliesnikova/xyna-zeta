@@ -32,8 +32,8 @@ export interface XcStructureTreeNode extends XcTreeNode {
 
 export class XcReadonlyStructureTreeDataSource extends XcBaseStructureTreeDataSource<XcStructureTreeNode> {
 
-    constructor(apiService: ApiService, i18n: I18nService, rtc: RuntimeContext, content: Xo[]) {
-        super(apiService, i18n, rtc, content, new XoArray().append(...content));
+    constructor(apiService: ApiService, i18n: I18nService, rtc: RuntimeContext, content: Xo[], translateLabels: boolean = true) {
+        super(apiService, i18n, rtc, content, new XoArray().append(...content), translateLabels);
     }
 
 
